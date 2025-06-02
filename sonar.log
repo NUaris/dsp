@@ -141,3 +141,20 @@ AttributeError: Figure.set() got an unexpected keyword argument 'width'
 2025-06-02 20:24:10,912 [INFO] === Air-Sonar optimized start ===
 2025-06-02 20:24:14,734 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
 2025-06-02 20:33:35,560 [INFO] SonarWorker stopped
+2025-06-02 20:47:51,283 [INFO] === Air-Sonar optimized start ===
+2025-06-02 21:26:03,547 [INFO] === Air-Sonar optimized start ===
+2025-06-02 21:26:11,680 [INFO] === Air-Sonar optimized start ===
+2025-06-02 21:26:48,814 [INFO] === Air-Sonar optimized start ===
+2025-06-02 21:26:51,533 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-02 21:29:10,491 [INFO] SonarWorker stopped
+2025-06-02 21:29:38,629 [INFO] === Air-Sonar optimized start ===
+2025-06-02 21:29:45,358 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-02 21:32:08,066 [INFO] SonarWorker stopped
+2025-06-02 21:32:10,369 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-02 21:32:14,350 [INFO] SonarWorker stopped
+2025-06-02 22:04:33,015 [INFO] === Air-Sonar optimized start ===
+2025-06-02 22:04:39,737 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-02 22:11:53,699 [INFO] === Air-Sonar optimized start ===
+2025-06-02 22:12:00,478 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-02 22:14:50,480 [INFO] === Air-Sonar optimized start ===
+2025-06-02 22:14:54,698 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
