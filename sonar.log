@@ -1395,3 +1395,45 @@ AttributeError: Figure.set() got an unexpected keyword argument 'width'
 2025-06-02 23:06:57,897 [INFO] === Air-Sonar optimized start ===
 2025-06-02 23:07:01,459 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
 2025-06-02 23:11:25,274 [INFO] SonarWorker stopped
+2025-06-02 23:29:48,943 [INFO] === Air-Sonar optimized start ===
+2025-06-02 23:29:55,102 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-02 23:30:34,344 [INFO] SonarWorker stopped
+2025-06-02 23:31:45,460 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-02 23:32:30,639 [INFO] SonarWorker stopped
+2025-06-02 23:37:37,787 [INFO] === Air-Sonar optimized start ===
+2025-06-02 23:37:38,205 [ERROR] Fatal error, exit
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 842, in <module>
+    main()
+  File "f:\vscode\dsp\airSonar_optimized.py", line 835, in main
+    win = MainWindow()
+          ^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 508, in __init__
+    self.hist = MplCanvas("距离历史曲线", width=16, height=3.5)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 399, in __init__
+    self.setMinimumSize(width*dpi//2, height*dpi//2)  # 设置最小尺寸防止过度缩放
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: arguments did not match any overloaded call:
+  setMinimumSize(self, minw: int, minh: int): argument 2 has unexpected type 'float'
+  setMinimumSize(self, s: QSize): argument 1 has unexpected type 'int'
+2025-06-02 23:38:29,597 [INFO] === Air-Sonar optimized start ===
+2025-06-02 23:38:30,144 [ERROR] Fatal error, exit
+Traceback (most recent call last):
+  File "F:\vscode\dsp\airSonar_optimized.py", line 847, in <module>
+    main()
+  File "F:\vscode\dsp\airSonar_optimized.py", line 840, in main
+    win = MainWindow()
+          ^^^^^^^^^^^^
+  File "F:\vscode\dsp\airSonar_optimized.py", line 508, in __init__
+    self.hist = MplCanvas("距离历史曲线", width=16, height=3.5)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\vscode\dsp\airSonar_optimized.py", line 399, in __init__
+    self.setMinimumSize(width*dpi//2, height*dpi//2)  # 设置最小尺寸防止过度缩放
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: arguments did not match any overloaded call:
+  setMinimumSize(self, minw: int, minh: int): argument 2 has unexpected type 'float'
+  setMinimumSize(self, s: QSize): argument 1 has unexpected type 'int'
+2025-06-02 23:39:29,776 [INFO] === Air-Sonar optimized start ===
+2025-06-02 23:39:34,214 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-02 23:40:40,730 [INFO] SonarWorker stopped

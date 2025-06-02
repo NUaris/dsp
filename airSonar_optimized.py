@@ -15,7 +15,7 @@ Windows 平台实时空气声纳系统（最大量程 50 m）优化实现。
 Copyright © 2025
 """
 
-import sys, time, csv, logging, queue, math, os
+import sys, time, csv, logging, queue, math, os, traceback
 from pathlib import Path
 from threading import Lock
 from collections import deque
@@ -35,13 +35,13 @@ try:
     GPU_AVAILABLE = True
     print("GPU (CuPy) 支持已启用")
 except ImportError:
-    cp = np
+    cp = None
     GPU_AVAILABLE = False
     print("GPU不可用，使用CPU计算")
 
 # OpenGL支持matplotlib
 try:
-    from OpenGL.GL import *
+    import OpenGL.GL as gl
     plt.rcParams['backend'] = 'Qt5Agg'
     OPENGL_AVAILABLE = True
     print("OpenGL 渲染已启用")
@@ -66,10 +66,12 @@ CSV_PATH = Path("distances.csv")
 LOG_PATH = Path("sonar.log")
 BANDS = [(3000, 6000), (8000, 11000), (13000, 16000)]  # 修改为不同频段
 
-# 性能优化参数 - 大幅提高刷新频率
+# 性能优化参数 - 大幅提高刷新频率和减少卡顿
 PLOT_UPDATE_INTERVAL = 1  # 每次测量都更新图表
 SPECTRUM_UPDATE_INTERVAL = 1  # 每次都更新频谱，提高流畅度
-MAX_HIST_POINTS = 150  # 增加历史点数
+MAX_HIST_POINTS = 300  # 增加历史点数
+GUI_UPDATE_RATE = 60  # GUI更新频率 (Hz) - 提高到60FPS
+PLOT_DECIMATION = 1  # 绘图数据抽取因子，1表示不抽取
 
 # ========= 日志 ========= #
 # 设置控制台编码为UTF-8
@@ -208,7 +210,7 @@ def mag2db(x):
 # === GPU加速函数 === #
 def gpu_fft(signal):
     """GPU加速的FFT计算"""
-    if GPU_AVAILABLE and hasattr(cp, 'asnumpy'):
+    if GPU_AVAILABLE and cp is not None:
         try:
             signal_gpu = cp.asarray(signal)
             fft_result = cp.fft.rfft(signal_gpu)
@@ -220,7 +222,7 @@ def gpu_fft(signal):
 
 def gpu_correlate(a, b):
     """GPU加速的相关计算"""
-    if GPU_AVAILABLE and hasattr(cp, 'asnumpy'):
+    if GPU_AVAILABLE and cp is not None:
         try:
             a_gpu = cp.asarray(a)
             b_gpu = cp.asarray(b)
@@ -323,9 +325,7 @@ class SonarWorker(QtCore.QThread):
                     
                     # 记录到CSV
                     with CSV_PATH.open("a", newline='') as f:
-                        csv.writer(f).writerow([time.time(), dist_kf, avg_confidence, normalized_snrs.tolist()])
-
-                # -------- 减少绘图频率以提高性能 ----------
+                        csv.writer(f).writerow([time.time(), dist_kf, avg_confidence, normalized_snrs.tolist()])                # -------- 减少绘图频率以提高性能 ----------
                 self.update_counter += 1
                 if self.update_counter % PLOT_UPDATE_INTERVAL == 0:
                     # 发信号给 GUI (降低频率)
@@ -336,6 +336,7 @@ class SonarWorker(QtCore.QThread):
                     for i, (chirp, filt) in enumerate(zip(self.chirps, self.filters)):
                         band_y = bandpass(rx, filt)
                         band_signals.append(band_y)
+                        # 修正：使用各频段自己的chirp信号进行自相关，而不是混合信号
                         corr = gpu_correlate(band_y, chirp)
                         correlations.append(corr)
                     
@@ -380,10 +381,26 @@ class SonarWorker(QtCore.QThread):
 # ------------------------------------------------------------------ #
 class MplCanvas(FigureCanvas):
     def __init__(self, title, parent=None, width=8, height=5.5, dpi=100):
+        # 性能优化：使用较低的DPI和简化的图形设置
         fig = Figure(figsize=(width, height), dpi=dpi, tight_layout=True)
+        # 设置性能优化参数
+        fig.patch.set_facecolor('white')
+        fig.patch.set_alpha(1.0)
+        
         self.ax = fig.add_subplot(111)
-        self.ax.set_title(title, fontsize=14, fontweight='bold', pad=20)
+        self.ax.set_title(title, fontsize=12, fontweight='bold', pad=15)
+        
+        # 性能优化：设置绘图参数
+        self.ax.set_rasterized(True)  # 光栅化以提高性能
+        
         super().__init__(fig)
+          # 性能优化：启用缓存和减少重绘
+        self.setMinimumSize(int(width*dpi//2), int(height*dpi//2))  # 设置最小尺寸防止过度缩放
+        
+    def clear_and_plot(self, *args, **kwargs):
+        """优化的清空和绘图方法"""
+        self.ax.clear()
+        return self.ax
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -472,16 +489,22 @@ class MainWindow(QtWidgets.QMainWindow):
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                     stop:0 #f66356, stop:1 #e34f4f);
             }
-        """)
-          # 波形 & 频谱 - 修改为新的布局
-        self.txSpec = MplCanvas("发射信号频谱分析", width=8, height=5.5)
-        self.rxSpec = MplCanvas("接收信号原始频谱", width=8, height=5.5)
-        self.corrPlot = MplCanvas("自相关函数", width=8, height=5.5)  # 新增自相关图
-        self.bandPlots = [
-            MplCanvas(f"频段{i+1}滤波信号 ({BANDS[i][0]}-{BANDS[i][1]}Hz)", width=8, height=3.5) 
+        """)          # 波形 & 频谱 - 修改为新的布局，调整尺寸以减少卡顿
+        self.txSpec = MplCanvas("发射信号频谱分析", width=6, height=4)
+        self.rxSpec = MplCanvas("接收信号原始频谱", width=6, height=4)
+        
+        # 三个自相关图 - 减小尺寸提高性能
+        self.corrPlots = [
+            MplCanvas(f"频段{i+1}自相关 ({BANDS[i][0]}-{BANDS[i][1]}Hz)", width=5, height=3) 
             for i in range(3)
-        ]  # 三个频段的滤波信号
-        self.hist = MplCanvas("距离历史曲线", width=16, height=4)
+        ]
+        
+        # 三个频段的频谱图（不是时域信号） - 减小尺寸提高性能
+        self.bandSpecPlots = [
+            MplCanvas(f"频段{i+1}滤波频谱 ({BANDS[i][0]}-{BANDS[i][1]}Hz)", width=5, height=3) 
+            for i in range(3)
+        ]  
+        self.hist = MplCanvas("距离历史曲线", width=16, height=3.5)
         
         # 为图表添加边框样式
         chart_style = """
@@ -492,8 +515,9 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         self.txSpec.setStyleSheet(chart_style)
         self.rxSpec.setStyleSheet(chart_style)
-        self.corrPlot.setStyleSheet(chart_style)
-        for plot in self.bandPlots:
+        for plot in self.corrPlots:
+            plot.setStyleSheet(chart_style)
+        for plot in self.bandSpecPlots:
             plot.setStyleSheet(chart_style)
         self.hist.setStyleSheet(chart_style)
         
@@ -521,19 +545,20 @@ class MainWindow(QtWidgets.QMainWindow):
         control_layout.addLayout(temp_layout)
         control_layout.addStretch()
         control_layout.addWidget(self.confidence_label)
-        control_layout.addWidget(self.label)
-        
-        # 图表网格 - 新的3x2布局
+        control_layout.addWidget(self.label)          # 图表网格 - 修改为新的布局：第一行2个，下面3列
         g = QtWidgets.QGridLayout()
-        g.setSpacing(12)
-        # 第一行：发射频谱、接收频谱、自相关
+        g.setSpacing(8)  # 减少间距以节省空间
+        # 第一行：发射频谱、接收频谱
         g.addWidget(self.txSpec, 0, 0)
         g.addWidget(self.rxSpec, 0, 1)
-        g.addWidget(self.corrPlot, 0, 2)
-        # 第二行：三个频段的滤波信号
-        g.addWidget(self.bandPlots[0], 1, 0)
-        g.addWidget(self.bandPlots[1], 1, 1)
-        g.addWidget(self.bandPlots[2], 1, 2)
+        # 第二行：三个频段的自相关图
+        g.addWidget(self.corrPlots[0], 1, 0)
+        g.addWidget(self.corrPlots[1], 1, 1)
+        g.addWidget(self.corrPlots[2], 1, 2)
+        # 第三行：三个频段的滤波频谱（在对应自相关下方）
+        g.addWidget(self.bandSpecPlots[0], 2, 0)
+        g.addWidget(self.bandSpecPlots[1], 2, 1)
+        g.addWidget(self.bandSpecPlots[2], 2, 2)
         
         # 主布局
         vbox = QtWidgets.QVBoxLayout()
@@ -553,11 +578,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.time_hist = []
         self.confidence_hist = []
         self.start_time = None
-        self.worker = None
-        
-        # 性能优化：减少重绘
+        self.worker = None        # 性能优化：减少重绘并添加绘图缓存
         self.last_update_time = 0
-        self.min_update_interval = 0.1  # 最小更新间隔100ms
+        self.min_update_interval = 1.0 / GUI_UPDATE_RATE  # 基于GUI_UPDATE_RATE计算更新间隔
+        self.plot_cache = {}  # 绘图缓存
+        self.spectrum_cache_timeout = 0.2  # 频谱缓存超时时间(秒)
 
     def on_temp_changed(self, value):
         """温度改变时更新worker的温度值"""
@@ -638,10 +663,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.hist.ax.spines['bottom'].set_linewidth(2)
         
         self.hist.draw()
-        
     @QtCore.pyqtSlot(dict)
     def _on_wave(self, data):
         try:
+            current_time = time.time()
             rx = data['rx']
             band_signals = data.get('band_signals', [])
             correlations = data.get('correlations', [])
@@ -650,113 +675,134 @@ class MainWindow(QtWidgets.QMainWindow):
             # 定义颜色
             colors = ['#e74c3c', '#f39c12', '#9b59b6']
             
-            # 发射信号频谱（使用预生成的混合信号）
+            # 性能优化：数据抽取（每PLOT_DECIMATION个点取一个）
+            if len(rx) > 1000 and PLOT_DECIMATION > 1:
+                rx_decimated = rx[::PLOT_DECIMATION]
+            else:
+                rx_decimated = rx
+            
+            # 发射信号频谱（使用缓存和抽取）
             if update_spectrum and hasattr(self, 'worker') and self.worker:
-                tx_mixed = self.worker.tx_pcm / 32768.0  # 归一化
-                f_tx = np.fft.rfftfreq(len(tx_mixed), 1/FS)
-                spec_tx = mag2db(np.fft.rfft(tx_mixed))
+                cache_key = 'tx_spectrum'
+                if (cache_key not in self.plot_cache or 
+                    current_time - self.plot_cache[cache_key]['timestamp'] > self.spectrum_cache_timeout):
+                    
+                    tx_mixed = self.worker.tx_pcm / 32768.0  # 归一化
+                    # 数据抽取
+                    if len(tx_mixed) > 1000 and PLOT_DECIMATION > 1:
+                        tx_mixed = tx_mixed[::PLOT_DECIMATION]
+                    
+                    f_tx = np.fft.rfftfreq(len(tx_mixed), PLOT_DECIMATION/FS)
+                    spec_tx = mag2db(np.fft.rfft(tx_mixed))
+                    
+                    # 缓存结果
+                    self.plot_cache[cache_key] = {
+                        'timestamp': current_time,
+                        'f_tx': f_tx,
+                        'spec_tx': spec_tx
+                    }
+                
+                # 使用缓存数据
+                cached_data = self.plot_cache[cache_key]
                 
                 self.txSpec.ax.clear()
-                self.txSpec.ax.plot(f_tx/1000, spec_tx, color='#27ae60', linewidth=2.5, alpha=0.9)
-                self.txSpec.ax.grid(True, alpha=0.4, linewidth=0.8)
-                self.txSpec.ax.set_xlabel("频率 (kHz)", fontsize=12, fontweight='bold')
-                self.txSpec.ax.set_ylabel("幅度 (dB)", fontsize=12, fontweight='bold')
-                self.txSpec.ax.set_title("发射信号频谱", fontsize=14, fontweight='bold', pad=15)
-                self.txSpec.ax.tick_params(labelsize=11)
+                self.txSpec.ax.plot(cached_data['f_tx']/1000, cached_data['spec_tx'], 
+                                  color='#27ae60', linewidth=2.0, alpha=0.9)  # 减小线宽
+                self.txSpec.ax.grid(True, alpha=0.3, linewidth=0.5)  # 减小网格线宽
+                self.txSpec.ax.set_xlabel("频率 (kHz)", fontsize=10, fontweight='bold')  # 减小字体
+                self.txSpec.ax.set_ylabel("幅度 (dB)", fontsize=10, fontweight='bold')
+                self.txSpec.ax.set_title("发射信号频谱", fontsize=12, fontweight='bold', pad=10)
+                self.txSpec.ax.tick_params(labelsize=9)
                 # 高亮频带区域
                 for low, high in BANDS:
-                    self.txSpec.ax.axvspan(low/1000, high/1000, alpha=0.15, color='#27ae60')
+                    self.txSpec.ax.axvspan(low/1000, high/1000, alpha=0.12, color='#27ae60')
                 # 美化坐标轴
                 self.txSpec.ax.spines['top'].set_visible(False)
                 self.txSpec.ax.spines['right'].set_visible(False)
-                self.txSpec.ax.spines['left'].set_linewidth(1.5)
-                self.txSpec.ax.spines['bottom'].set_linewidth(1.5)
-                self.txSpec.draw()
-                
+                self.txSpec.ax.spines['left'].set_linewidth(1.0)  # 减小边框线宽
+                self.txSpec.ax.spines['bottom'].set_linewidth(1.0)
+                self.txSpec.draw()                
                 # ---- Rx 原始频谱 ----
-                f_rx = np.fft.rfftfreq(rx.size, 1/FS)
-                spec_rx = mag2db(np.fft.rfft(rx))
+                f_rx = np.fft.rfftfreq(rx_decimated.size, PLOT_DECIMATION/FS)
+                spec_rx = mag2db(np.fft.rfft(rx_decimated))
                 self.rxSpec.ax.clear()
                 self.rxSpec.ax.plot(f_rx/1000, spec_rx, color='#c0392b', linewidth=2.0, alpha=0.8)
-                self.rxSpec.ax.grid(True, alpha=0.4, linewidth=0.8)
-                self.rxSpec.ax.set_xlabel("频率 (kHz)", fontsize=12, fontweight='bold')
-                self.rxSpec.ax.set_ylabel("幅度 (dB)", fontsize=12, fontweight='bold')
-                self.rxSpec.ax.set_title("接收信号原始频谱", fontsize=14, fontweight='bold', pad=15)
-                self.rxSpec.ax.tick_params(labelsize=11)
+                self.rxSpec.ax.grid(True, alpha=0.3, linewidth=0.5)  # 减小网格线宽
+                self.rxSpec.ax.set_xlabel("频率 (kHz)", fontsize=10, fontweight='bold')
+                self.rxSpec.ax.set_ylabel("幅度 (dB)", fontsize=10, fontweight='bold')
+                self.rxSpec.ax.set_title("接收信号原始频谱", fontsize=12, fontweight='bold', pad=10)
+                self.rxSpec.ax.tick_params(labelsize=9)
                 # 高亮频带区域
                 for low, high in BANDS:
-                    self.rxSpec.ax.axvspan(low/1000, high/1000, alpha=0.15, color='#c0392b')
+                    self.rxSpec.ax.axvspan(low/1000, high/1000, alpha=0.12, color='#c0392b')
                 # 美化坐标轴
                 self.rxSpec.ax.spines['top'].set_visible(False)
                 self.rxSpec.ax.spines['right'].set_visible(False)
-                self.rxSpec.ax.spines['left'].set_linewidth(1.5)
-                self.rxSpec.ax.spines['bottom'].set_linewidth(1.5)
-                self.rxSpec.draw()
-            
-            # ---- 自相关函数图 ----
+                self.rxSpec.ax.spines['left'].set_linewidth(1.0)
+                self.rxSpec.ax.spines['bottom'].set_linewidth(1.0)
+                self.rxSpec.draw()              # ---- 三个独立的自相关函数图 ----
             if correlations:
-                self.corrPlot.ax.clear()
                 colors = ['#e74c3c', '#f39c12', '#9b59b6']
-                for i, corr in enumerate(correlations):
+                for i, corr in enumerate(correlations[:3]):  # 最多3个频段
                     if len(corr) > 0:
+                        # 数据抽取以提高性能
+                        if len(corr) > 2000 and PLOT_DECIMATION > 1:
+                            corr_decimated = corr[::PLOT_DECIMATION]
+                        else:
+                            corr_decimated = corr
+                        
                         # 时间轴（以毫秒为单位）
-                        # corr = correlate(band_signal, chirp_signal, mode='full')
-                        # chirp_signal length N = int(FS * CHIRP_LEN)
-                        # band_signal length M = int(FS * LISTEN_LEN)
-                        # len(corr) = M + N - 1
-                        # Zero lag for correlate(signal_M, reference_N) is at index (N - 1) in the correlation result.
-                        # So, for an element at index `j` in `corr`, its lag is `j - (N - 1)` samples.
-                        
                         len_chirp_samples = int(FS * CHIRP_LEN)
-                        
-                        lag_indices = np.arange(len(corr)) # Indices from 0 to len(corr)-1
-                        time_axis_samples = lag_indices - (len_chirp_samples - 1)
+                        lag_indices = np.arange(len(corr_decimated))
+                        time_axis_samples = lag_indices * PLOT_DECIMATION - (len_chirp_samples - 1)
                         time_axis = time_axis_samples / FS * 1000  # 转换为毫秒
                         
-                        self.corrPlot.ax.plot(time_axis, corr, 
-                                            color=colors[i % len(colors)], 
-                                            linewidth=1.5, alpha=0.8,
-                                            label=f'频段{i+1} ({BANDS[i][0]}-{BANDS[i][1]}Hz)')
-                
-                self.corrPlot.ax.grid(True, alpha=0.4, linewidth=0.8)
-                self.corrPlot.ax.set_xlabel("时间延迟 (ms)", fontsize=12, fontweight='bold')
-                self.corrPlot.ax.set_ylabel("相关系数", fontsize=12, fontweight='bold')
-                self.corrPlot.ax.set_title("多频段自相关函数", fontsize=14, fontweight='bold', pad=15)
-                self.corrPlot.ax.tick_params(labelsize=11)
-                self.corrPlot.ax.legend(fontsize=10)
-                # 美化坐标轴
-                self.corrPlot.ax.spines['top'].set_visible(False)
-                self.corrPlot.ax.spines['right'].set_visible(False)
-                self.corrPlot.ax.spines['left'].set_linewidth(1.5)
-                self.corrPlot.ax.spines['bottom'].set_linewidth(1.5)
-                self.corrPlot.draw()
+                        self.corrPlots[i].ax.clear()
+                        self.corrPlots[i].ax.plot(time_axis, corr_decimated, 
+                                                color=colors[i % len(colors)], 
+                                                linewidth=1.5, alpha=0.9)  # 减小线宽
+                        self.corrPlots[i].ax.grid(True, alpha=0.3, linewidth=0.5)  # 减小网格线宽
+                        self.corrPlots[i].ax.set_xlabel("时间延迟 (ms)", fontsize=9, fontweight='bold')
+                        self.corrPlots[i].ax.set_ylabel("相关系数", fontsize=9, fontweight='bold')
+                        self.corrPlots[i].ax.set_title(f"频段{i+1}自相关 ({BANDS[i][0]}-{BANDS[i][1]}Hz)", 
+                                                     fontsize=10, fontweight='bold', pad=8)
+                        self.corrPlots[i].ax.tick_params(labelsize=8)
+                        # 美化坐标轴
+                        self.corrPlots[i].ax.spines['top'].set_visible(False)
+                        self.corrPlots[i].ax.spines['right'].set_visible(False)
+                        self.corrPlots[i].ax.spines['left'].set_linewidth(1.0)
+                        self.corrPlots[i].ax.spines['bottom'].set_linewidth(1.0)
+                        self.corrPlots[i].draw()
             
-            # ---- 各频段滤波信号 ----
+            # ---- 各频段滤波信号的频谱图 ----
             if band_signals:
                 for i, band_signal in enumerate(band_signals[:3]):  # 最多3个频段
                     if len(band_signal) > 0:
-                        time_axis = np.linspace(0, LISTEN_LEN, len(band_signal))
+                        # 计算频谱
+                        f_band = np.fft.rfftfreq(len(band_signal), 1/FS)
+                        spec_band = mag2db(np.fft.rfft(band_signal))
                         
-                        self.bandPlots[i].ax.clear()
-                        self.bandPlots[i].ax.plot(time_axis, band_signal, 
-                                                color=colors[i % len(colors)], 
-                                                linewidth=1.8, alpha=0.9)
-                        self.bandPlots[i].ax.grid(True, alpha=0.4, linewidth=0.8)
-                        self.bandPlots[i].ax.set_xlabel("时间 (s)", fontsize=10, fontweight='bold')
-                        self.bandPlots[i].ax.set_ylabel("幅度", fontsize=10, fontweight='bold')
-                        self.bandPlots[i].ax.set_title(f"频段{i+1}滤波信号 ({BANDS[i][0]}-{BANDS[i][1]}Hz)", 
-                                                     fontsize=12, fontweight='bold', pad=10)
-                        self.bandPlots[i].ax.tick_params(labelsize=9)
+                        self.bandSpecPlots[i].ax.clear()
+                        self.bandSpecPlots[i].ax.plot(f_band, spec_band, 
+                                                    color=colors[i % len(colors)], 
+                                                    linewidth=2.0, alpha=0.9)
+                        self.bandSpecPlots[i].ax.grid(True, alpha=0.4, linewidth=0.8)
+                        self.bandSpecPlots[i].ax.set_xlabel("频率 (Hz)", fontsize=10, fontweight='bold')
+                        self.bandSpecPlots[i].ax.set_ylabel("幅度 (dB)", fontsize=10, fontweight='bold')
+                        self.bandSpecPlots[i].ax.set_title(f"频段{i+1}滤波频谱 ({BANDS[i][0]}-{BANDS[i][1]}Hz)", 
+                                                         fontsize=12, fontweight='bold', pad=10)
+                        self.bandSpecPlots[i].ax.tick_params(labelsize=9)
+                        # 高亮对应频带区域
+                        low, high = BANDS[i]
+                        self.bandSpecPlots[i].ax.axvspan(low, high, alpha=0.15, color=colors[i % len(colors)])
                         # 美化坐标轴
-                        self.bandPlots[i].ax.spines['top'].set_visible(False)
-                        self.bandPlots[i].ax.spines['right'].set_visible(False)
-                        self.bandPlots[i].ax.spines['left'].set_linewidth(1.5)
-                        self.bandPlots[i].ax.spines['bottom'].set_linewidth(1.5)
-                        self.bandPlots[i].draw()
-                        
+                        self.bandSpecPlots[i].ax.spines['top'].set_visible(False)
+                        self.bandSpecPlots[i].ax.spines['right'].set_visible(False)
+                        self.bandSpecPlots[i].ax.spines['left'].set_linewidth(1.5)
+                        self.bandSpecPlots[i].ax.spines['bottom'].set_linewidth(1.5)
+                        self.bandSpecPlots[i].draw()
         except Exception as e:
             logger.error(f"Error in _on_wave: {e}")
-            import traceback
             traceback.print_exc()
 
     # --- 控制 ---
