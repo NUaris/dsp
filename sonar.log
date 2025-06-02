@@ -1437,3 +1437,6 @@ TypeError: arguments did not match any overloaded call:
 2025-06-02 23:39:29,776 [INFO] === Air-Sonar optimized start ===
 2025-06-02 23:39:34,214 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
 2025-06-02 23:40:40,730 [INFO] SonarWorker stopped
+2025-06-02 23:45:34,685 [INFO] === Air-Sonar optimized start ===
+2025-06-02 23:45:37,825 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-02 23:45:45,422 [INFO] SonarWorker stopped
