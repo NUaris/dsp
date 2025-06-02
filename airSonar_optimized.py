@@ -54,7 +54,7 @@ plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans']
 plt.rcParams['axes.unicode_minus'] = False
 
 # ========= 声纳参数 ========= #
-FS = 44100
+FS = 48400
 CHIRP_LEN = 0.05  # 缩短发射声波时长：从0.1s减少到0.05s
 LISTEN_LEN = 0.15  # 相应缩短接收时长
 CYCLE = 0.5  # 增大发送间隔：从0.3s增加到0.5s
@@ -64,7 +64,7 @@ CHANNELS = 1
 FORMAT = pyaudio.paInt16
 CSV_PATH = Path("distances.csv")
 LOG_PATH = Path("sonar.log")
-BANDS = [(3000, 6000), (8000, 11000), (13000, 16000)]  # 修改为不同频段
+BANDS = [(21000, 23000), (21000, 23000), (21000, 23000)]  # 修改为不同频段
 
 # 性能优化参数 - 大幅提高刷新频率和减少卡顿
 PLOT_UPDATE_INTERVAL = 1  # 每次测量都更新图表

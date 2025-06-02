@@ -1440,3 +1440,1985 @@ TypeError: arguments did not match any overloaded call:
 2025-06-02 23:45:34,685 [INFO] === Air-Sonar optimized start ===
 2025-06-02 23:45:37,825 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
 2025-06-02 23:45:45,422 [INFO] SonarWorker stopped
+2025-06-02 23:47:21,323 [INFO] === Air-Sonar optimized start ===
+2025-06-02 23:47:27,843 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-02 23:57:45,766 [INFO] SonarWorker stopped
+2025-06-02 23:58:16,460 [INFO] === Air-Sonar optimized start ===
+2025-06-02 23:58:21,204 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-02 23:59:01,195 [INFO] SonarWorker stopped
+2025-06-03 00:01:09,925 [INFO] === Air-Sonar optimized start ===
+2025-06-03 00:01:22,184 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-03 00:03:03,013 [INFO] SonarWorker stopped
+2025-06-03 00:03:07,814 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-03 00:04:51,695 [INFO] SonarWorker stopped
+2025-06-03 00:05:38,940 [INFO] === Air-Sonar optimized start ===
+2025-06-03 00:05:44,848 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-03 00:09:41,471 [INFO] SonarWorker stopped
+2025-06-03 00:10:23,616 [INFO] === Air-Sonar optimized start ===
+2025-06-03 00:10:27,401 [ERROR] Failed to design filter for band 21000-23000 Hz: Digital filter critical frequencies must be 0 < Wn < 1
+2025-06-03 00:10:27,401 [ERROR] Failed to design filter for band 21000-23000 Hz: Digital filter critical frequencies must be 0 < Wn < 1
+2025-06-03 00:10:27,401 [ERROR] Failed to design filter for band 21000-23000 Hz: Digital filter critical frequencies must be 0 < Wn < 1
+2025-06-03 00:10:27,871 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-03 00:10:28,031 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:28,373 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:28,872 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:29,376 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:29,876 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:30,377 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:30,877 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:31,374 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:31,877 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:32,375 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:32,878 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:33,376 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:33,880 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:34,379 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:34,877 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:35,379 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:35,881 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:36,380 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:36,879 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:37,382 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:37,879 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:38,380 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:38,883 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:39,385 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:39,882 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:40,383 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:40,886 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:41,384 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:41,884 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:42,388 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:42,886 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:43,387 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:43,886 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:44,390 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:44,889 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:45,388 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:45,888 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:46,389 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:46,893 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:47,390 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:47,891 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:48,391 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:48,894 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:49,395 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:49,896 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:50,396 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:50,894 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:51,394 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:51,898 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:52,395 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:52,896 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:53,397 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:53,897 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:54,400 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:54,902 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:55,399 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:55,903 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:56,404 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:56,902 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:57,405 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:57,906 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:58,407 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:58,905 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:59,405 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:10:59,907 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:11:00,406 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:11:00,909 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:11:01,410 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:11:01,909 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:11:02,410 [ERROR] worker loop error
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 301, in run
+    results = [f.result() for f in futs]
+               ^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 361, in _process_band
+    y = bandpass(rx, filt)
+        ^^^^^^^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 129, in bandpass
+    y = filtfilt(b, a, sig)
+        ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 4202, in filtfilt
+    zi = lfilter_zi(b, a)
+         ^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\signal\_signaltools.py", line 3753, in lfilter_zi
+    IminusA = np.eye(n - 1, dtype=np.result_type(a, b)) - linalg.companion(a).T
+                                                          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\linalg\_special_matrices.py", line 488, in companion
+    raise ValueError("The length of `a` must be at least 2.")
+ValueError: The length of `a` must be at least 2.
+2025-06-03 00:11:02,970 [INFO] SonarWorker stopped
+2025-06-03 00:11:50,277 [INFO] === Air-Sonar optimized start ===
+2025-06-03 00:11:54,715 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
