@@ -55,9 +55,9 @@ plt.rcParams['axes.unicode_minus'] = False
 
 # ========= 声纳参数 ========= #
 FS = 44100
-CHIRP_LEN = 0.1
-LISTEN_LEN = 0.2
-CYCLE = 0.3
+CHIRP_LEN = 0.05  # 缩短发射声波时长：从0.1s减少到0.05s
+LISTEN_LEN = 0.15  # 相应缩短接收时长
+CYCLE = 0.5  # 增大发送间隔：从0.3s增加到0.5s
 BASE_TEMP = 28.0  # 基准温度 (°C)
 SPEED_SOUND_20C = 343.0  # 20°C时的声速 (m/s)
 CHANNELS = 1
@@ -66,10 +66,10 @@ CSV_PATH = Path("distances.csv")
 LOG_PATH = Path("sonar.log")
 BANDS = [(3000, 6000), (8000, 11000), (13000, 16000)]  # 修改为不同频段
 
-# 性能优化参数 - 提高刷新频率
-PLOT_UPDATE_INTERVAL = 1  # 每次测量都更新图表，提高流畅度
-SPECTRUM_UPDATE_INTERVAL = 2  # 每2次测量更新一次频谱
-MAX_HIST_POINTS = 100  # 历史点数限制
+# 性能优化参数 - 大幅提高刷新频率
+PLOT_UPDATE_INTERVAL = 1  # 每次测量都更新图表
+SPECTRUM_UPDATE_INTERVAL = 1  # 每次都更新频谱，提高流畅度
+MAX_HIST_POINTS = 150  # 增加历史点数
 
 # ========= 日志 ========= #
 # 设置控制台编码为UTF-8
@@ -268,7 +268,7 @@ class SonarWorker(QtCore.QThread):
         self.audio = AudioIO()
         self.running = False
         self.temperature = 20.0  # 默认温度20°C
-        self.rx_buffer = deque(maxlen=int(FS*LISTEN_LEN))  # 回波缓存
+        # 移除了 self.rx_buffer
         self.update_counter = 0  # 更新计数器
         
         # 预计算FFT频率轴（性能优化）
@@ -282,7 +282,7 @@ class SonarWorker(QtCore.QThread):
         self.running = True
         num_cores = os.cpu_count() # 获取CPU核心数
         executor = ThreadPoolExecutor(max_workers=num_cores) # 使用所有核心
-        logger.info(f"SonarWorker started (optimized), utilizing {num_cores} CPU cores.") # 修改日志记录
+        logger.info(f"SonarWorker started (optimized), utilizing {num_cores} CPU cores.")
         
         while self.running:
             t0 = time.perf_counter()
@@ -291,7 +291,7 @@ class SonarWorker(QtCore.QThread):
                 self.audio.play(self.tx_pcm)
                 # -------- 接收 ----------
                 rx = self.audio.record()
-                self.rx_buffer.extend(rx)   # 加入缓存
+                # 直接处理信号，移除了 self.rx_buffer.extend(rx)
 
                 # -------- 并行滤波+相关 ----------
                 futs = [executor.submit(self._process_band, rx, chirp, filt, i)
@@ -638,87 +638,116 @@ class MainWindow(QtWidgets.QMainWindow):
         self.hist.ax.spines['bottom'].set_linewidth(2)
         
         self.hist.draw()
-
+        
     @QtCore.pyqtSlot(dict)
     def _on_wave(self, data):
-        tx, rx = data['tx'], data['rx']
-        update_spectrum = data.get('update_spectrum', True)
-        
-        # 时间轴
-        tx_time = np.linspace(0, CHIRP_LEN, len(tx))
-        rx_time = np.linspace(0, LISTEN_LEN, len(rx))
-        
-        # ---- Tx 时域 - 增强版 ----
-        self.txTime.ax.clear()
-        self.txTime.ax.plot(tx_time, tx, color='#2ecc71', linewidth=2.5, alpha=0.9)
-        self.txTime.ax.grid(True, alpha=0.4, linewidth=0.8)
-        self.txTime.ax.set_xlabel("时间 (s)", fontsize=12, fontweight='bold')
-        self.txTime.ax.set_ylabel("幅度", fontsize=12, fontweight='bold')
-        self.txTime.ax.set_title("发射信号时域", fontsize=14, fontweight='bold', pad=15)
-        self.txTime.ax.tick_params(labelsize=11)
-        # 美化坐标轴
-        self.txTime.ax.spines['top'].set_visible(False)
-        self.txTime.ax.spines['right'].set_visible(False)
-        self.txTime.ax.spines['left'].set_linewidth(1.5)
-        self.txTime.ax.spines['bottom'].set_linewidth(1.5)
-        self.txTime.draw()
-        
-        # ---- Rx 时域 - 增强版 ----
-        self.rxTime.ax.clear()
-        self.rxTime.ax.plot(rx_time, rx, color='#e74c3c', linewidth=2.0, alpha=0.8)
-        self.rxTime.ax.grid(True, alpha=0.4, linewidth=0.8)
-        self.rxTime.ax.set_xlabel("时间 (s)", fontsize=12, fontweight='bold')
-        self.rxTime.ax.set_ylabel("幅度", fontsize=12, fontweight='bold')
-        self.rxTime.ax.set_title("接收信号时域", fontsize=14, fontweight='bold', pad=15)
-        self.rxTime.ax.tick_params(labelsize=11)
-        # 美化坐标轴
-        self.rxTime.ax.spines['top'].set_visible(False)
-        self.rxTime.ax.spines['right'].set_visible(False)
-        self.rxTime.ax.spines['left'].set_linewidth(1.5)
-        self.rxTime.ax.spines['bottom'].set_linewidth(1.5)
-        self.rxTime.draw()
-        
-        # 频谱图更新频率控制（性能优化）
-        if update_spectrum:
-            # ---- Tx 频谱 - 增强版 ----
-            f = np.fft.rfftfreq(tx.size, 1/FS)
-            spec = mag2db(np.fft.rfft(tx))
-            self.txSpec.ax.clear()
-            self.txSpec.ax.plot(f/1000, spec, color='#27ae60', linewidth=2.5, alpha=0.9)
-            self.txSpec.ax.grid(True, alpha=0.4, linewidth=0.8)
-            self.txSpec.ax.set_xlabel("频率 (kHz)", fontsize=12, fontweight='bold')
-            self.txSpec.ax.set_ylabel("幅度 (dB)", fontsize=12, fontweight='bold')
-            self.txSpec.ax.set_title("发射信号频谱", fontsize=14, fontweight='bold', pad=15)
-            self.txSpec.ax.tick_params(labelsize=11)
-            # 高亮频带区域
-            for low, high in BANDS:
-                self.txSpec.ax.axvspan(low/1000, high/1000, alpha=0.15, color='#27ae60')
-            # 美化坐标轴
-            self.txSpec.ax.spines['top'].set_visible(False)
-            self.txSpec.ax.spines['right'].set_visible(False)
-            self.txSpec.ax.spines['left'].set_linewidth(1.5)
-            self.txSpec.ax.spines['bottom'].set_linewidth(1.5)
-            self.txSpec.draw()
+        try:
+            rx = data['rx']
+            band_signals = data.get('band_signals', [])
+            correlations = data.get('correlations', [])
+            update_spectrum = data.get('update_spectrum', True)
             
-            # ---- Rx 原始频谱 - 显示未滤波的原始频谱 ----
-            f2 = np.fft.rfftfreq(rx.size, 1/FS)
-            spec2 = mag2db(np.fft.rfft(rx))  # 原始接收信号的频谱
-            self.rxSpec.ax.clear()
-            self.rxSpec.ax.plot(f2/1000, spec2, color='#c0392b', linewidth=2.0, alpha=0.8)
-            self.rxSpec.ax.grid(True, alpha=0.4, linewidth=0.8)
-            self.rxSpec.ax.set_xlabel("频率 (kHz)", fontsize=12, fontweight='bold')
-            self.rxSpec.ax.set_ylabel("幅度 (dB)", fontsize=12, fontweight='bold')
-            self.rxSpec.ax.set_title("接收信号原始频谱 (未滤波)", fontsize=14, fontweight='bold', pad=15)
-            self.rxSpec.ax.tick_params(labelsize=11)
-            # 高亮频带区域
-            for low, high in BANDS:
-                self.rxSpec.ax.axvspan(low/1000, high/1000, alpha=0.15, color='#c0392b')
-            # 美化坐标轴
-            self.rxSpec.ax.spines['top'].set_visible(False)
-            self.rxSpec.ax.spines['right'].set_visible(False)
-            self.rxSpec.ax.spines['left'].set_linewidth(1.5)
-            self.rxSpec.ax.spines['bottom'].set_linewidth(1.5)
-            self.rxSpec.draw()
+            # 定义颜色
+            colors = ['#e74c3c', '#f39c12', '#9b59b6']
+            
+            # 发射信号频谱（使用预生成的混合信号）
+            if update_spectrum and hasattr(self, 'worker') and self.worker:
+                tx_mixed = self.worker.tx_pcm / 32768.0  # 归一化
+                f_tx = np.fft.rfftfreq(len(tx_mixed), 1/FS)
+                spec_tx = mag2db(np.fft.rfft(tx_mixed))
+                
+                self.txSpec.ax.clear()
+                self.txSpec.ax.plot(f_tx/1000, spec_tx, color='#27ae60', linewidth=2.5, alpha=0.9)
+                self.txSpec.ax.grid(True, alpha=0.4, linewidth=0.8)
+                self.txSpec.ax.set_xlabel("频率 (kHz)", fontsize=12, fontweight='bold')
+                self.txSpec.ax.set_ylabel("幅度 (dB)", fontsize=12, fontweight='bold')
+                self.txSpec.ax.set_title("发射信号频谱", fontsize=14, fontweight='bold', pad=15)
+                self.txSpec.ax.tick_params(labelsize=11)
+                # 高亮频带区域
+                for low, high in BANDS:
+                    self.txSpec.ax.axvspan(low/1000, high/1000, alpha=0.15, color='#27ae60')
+                # 美化坐标轴
+                self.txSpec.ax.spines['top'].set_visible(False)
+                self.txSpec.ax.spines['right'].set_visible(False)
+                self.txSpec.ax.spines['left'].set_linewidth(1.5)
+                self.txSpec.ax.spines['bottom'].set_linewidth(1.5)
+                self.txSpec.draw()
+                
+                # ---- Rx 原始频谱 ----
+                f_rx = np.fft.rfftfreq(rx.size, 1/FS)
+                spec_rx = mag2db(np.fft.rfft(rx))
+                self.rxSpec.ax.clear()
+                self.rxSpec.ax.plot(f_rx/1000, spec_rx, color='#c0392b', linewidth=2.0, alpha=0.8)
+                self.rxSpec.ax.grid(True, alpha=0.4, linewidth=0.8)
+                self.rxSpec.ax.set_xlabel("频率 (kHz)", fontsize=12, fontweight='bold')
+                self.rxSpec.ax.set_ylabel("幅度 (dB)", fontsize=12, fontweight='bold')
+                self.rxSpec.ax.set_title("接收信号原始频谱", fontsize=14, fontweight='bold', pad=15)
+                self.rxSpec.ax.tick_params(labelsize=11)
+                # 高亮频带区域
+                for low, high in BANDS:
+                    self.rxSpec.ax.axvspan(low/1000, high/1000, alpha=0.15, color='#c0392b')
+                # 美化坐标轴
+                self.rxSpec.ax.spines['top'].set_visible(False)
+                self.rxSpec.ax.spines['right'].set_visible(False)
+                self.rxSpec.ax.spines['left'].set_linewidth(1.5)
+                self.rxSpec.ax.spines['bottom'].set_linewidth(1.5)
+                self.rxSpec.draw()
+            
+            # ---- 自相关函数图 ----
+            if correlations:
+                self.corrPlot.ax.clear()
+                colors = ['#e74c3c', '#f39c12', '#9b59b6']
+                for i, corr in enumerate(correlations):
+                    if len(corr) > 0:
+                        # 时间轴（以毫秒为单位）
+                        half = len(corr) // 2
+                        time_axis = np.arange(-half, half) / FS * 1000  # 转换为毫秒
+                        
+                        self.corrPlot.ax.plot(time_axis, corr, 
+                                            color=colors[i % len(colors)], 
+                                            linewidth=1.5, alpha=0.8,
+                                            label=f'频段{i+1} ({BANDS[i][0]}-{BANDS[i][1]}Hz)')
+                
+                self.corrPlot.ax.grid(True, alpha=0.4, linewidth=0.8)
+                self.corrPlot.ax.set_xlabel("时间延迟 (ms)", fontsize=12, fontweight='bold')
+                self.corrPlot.ax.set_ylabel("相关系数", fontsize=12, fontweight='bold')
+                self.corrPlot.ax.set_title("多频段自相关函数", fontsize=14, fontweight='bold', pad=15)
+                self.corrPlot.ax.tick_params(labelsize=11)
+                self.corrPlot.ax.legend(fontsize=10)
+                # 美化坐标轴
+                self.corrPlot.ax.spines['top'].set_visible(False)
+                self.corrPlot.ax.spines['right'].set_visible(False)
+                self.corrPlot.ax.spines['left'].set_linewidth(1.5)
+                self.corrPlot.ax.spines['bottom'].set_linewidth(1.5)
+                self.corrPlot.draw()
+            
+            # ---- 各频段滤波信号 ----
+            if band_signals:
+                for i, band_signal in enumerate(band_signals[:3]):  # 最多3个频段
+                    if len(band_signal) > 0:
+                        time_axis = np.linspace(0, LISTEN_LEN, len(band_signal))
+                        
+                        self.bandPlots[i].ax.clear()
+                        self.bandPlots[i].ax.plot(time_axis, band_signal, 
+                                                color=colors[i % len(colors)], 
+                                                linewidth=1.8, alpha=0.9)
+                        self.bandPlots[i].ax.grid(True, alpha=0.4, linewidth=0.8)
+                        self.bandPlots[i].ax.set_xlabel("时间 (s)", fontsize=10, fontweight='bold')
+                        self.bandPlots[i].ax.set_ylabel("幅度", fontsize=10, fontweight='bold')
+                        self.bandPlots[i].ax.set_title(f"频段{i+1}滤波信号 ({BANDS[i][0]}-{BANDS[i][1]}Hz)", 
+                                                     fontsize=12, fontweight='bold', pad=10)
+                        self.bandPlots[i].ax.tick_params(labelsize=9)
+                        # 美化坐标轴
+                        self.bandPlots[i].ax.spines['top'].set_visible(False)
+                        self.bandPlots[i].ax.spines['right'].set_visible(False)
+                        self.bandPlots[i].ax.spines['left'].set_linewidth(1.5)
+                        self.bandPlots[i].ax.spines['bottom'].set_linewidth(1.5)
+                        self.bandPlots[i].draw()
+                        
+        except Exception as e:
+            logger.error(f"Error in _on_wave: {e}")
+            import traceback
+            traceback.print_exc()
 
     # --- 控制 ---
     def start(self):
