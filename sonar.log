@@ -1,0 +1,143 @@
+2025-06-02 18:18:41,515 [INFO] === Air-Sonar enhanced start ===
+2025-06-02 18:18:41,543 [ERROR] Fatal error, exit
+Traceback (most recent call last):
+  File "F:\vscode\dsp\airSonar.py", line 306, in <module>
+    main()
+  File "F:\vscode\dsp\airSonar.py", line 301, in main
+    win = MainWindow(); win.resize(1100,650); win.show()
+          ^^^^^^^^^^^^
+  File "F:\vscode\dsp\airSonar.py", line 234, in __init__
+    self.txTime = MplCanvas("Tx 时域", width=3, height=2, dpi=90)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\vscode\dsp\airSonar.py", line 219, in __init__
+    fig = Figure(tight_layout=True, **kw)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\matplotlib\figure.py", line 2502, in __init__
+    super().__init__(**kwargs)
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\matplotlib\figure.py", line 154, in __init__
+    self.set(**kwargs)
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\matplotlib\artist.py", line 147, in <lambda>
+    cls.set = lambda self, **kwargs: Artist.set(self, **kwargs)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\matplotlib\artist.py", line 1224, in set
+    return self._internal_update(cbook.normalize_kwargs(kwargs, self))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\matplotlib\artist.py", line 1216, in _internal_update
+    return self._update_props(
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\matplotlib\artist.py", line 1190, in _update_props
+    raise AttributeError(
+AttributeError: Figure.set() got an unexpected keyword argument 'width'
+2025-06-02 18:19:45,571 [INFO] === Air-Sonar enhanced start ===
+2025-06-02 18:19:45,604 [ERROR] Fatal error, exit
+Traceback (most recent call last):
+  File "F:\vscode\dsp\airSonar.py", line 310, in <module>
+    main()
+  File "F:\vscode\dsp\airSonar.py", line 305, in main
+    win = MainWindow(); win.resize(1100,650); win.show()
+          ^^^^^^^^^^^^
+  File "F:\vscode\dsp\airSonar.py", line 238, in __init__
+    self.txTime = MplCanvas("Tx 时域", width=3, height=2, dpi=90)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\vscode\dsp\airSonar.py", line 223, in __init__
+    fig = Figure(tight_layout=True, **kw)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\matplotlib\figure.py", line 2502, in __init__
+    super().__init__(**kwargs)
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\matplotlib\figure.py", line 154, in __init__
+    self.set(**kwargs)
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\matplotlib\artist.py", line 147, in <lambda>
+    cls.set = lambda self, **kwargs: Artist.set(self, **kwargs)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\matplotlib\artist.py", line 1224, in set
+    return self._internal_update(cbook.normalize_kwargs(kwargs, self))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\matplotlib\artist.py", line 1216, in _internal_update
+    return self._update_props(
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\matplotlib\artist.py", line 1190, in _update_props
+    raise AttributeError(
+AttributeError: Figure.set() got an unexpected keyword argument 'width'
+2025-06-02 18:20:21,012 [INFO] === Air-Sonar enhanced start ===
+2025-06-02 18:20:21,124 [ERROR] Fatal error, exit
+Traceback (most recent call last):
+  File "F:\vscode\dsp\airSonar.py", line 310, in <module>
+    main()
+  File "F:\vscode\dsp\airSonar.py", line 305, in main
+    win = MainWindow(); win.resize(1100,650); win.show()
+          ^^^^^^^^^^^^
+  File "F:\vscode\dsp\airSonar.py", line 238, in __init__
+    self.txTime = MplCanvas("Tx 时域", width=3, height=2, dpi=90)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\vscode\dsp\airSonar.py", line 223, in __init__
+    fig = Figure(tight_layout=True, **kw)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\matplotlib\figure.py", line 2502, in __init__
+    super().__init__(**kwargs)
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\matplotlib\figure.py", line 154, in __init__
+    self.set(**kwargs)
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\matplotlib\artist.py", line 147, in <lambda>
+    cls.set = lambda self, **kwargs: Artist.set(self, **kwargs)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\matplotlib\artist.py", line 1224, in set
+    return self._internal_update(cbook.normalize_kwargs(kwargs, self))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\matplotlib\artist.py", line 1216, in _internal_update
+    return self._update_props(
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\helno\AppData\Local\Programs\Python\Python312\Lib\site-packages\matplotlib\artist.py", line 1190, in _update_props
+    raise AttributeError(
+AttributeError: Figure.set() got an unexpected keyword argument 'width'
+2025-06-02 18:20:44,479 [INFO] === Air-Sonar enhanced start ===
+2025-06-02 18:20:50,361 [INFO] SonarWorker started
+2025-06-02 18:20:52,831 [INFO] SonarWorker stopped
+2025-06-02 18:21:01,890 [INFO] SonarWorker started
+2025-06-02 18:21:03,450 [INFO] SonarWorker stopped
+2025-06-02 18:21:18,412 [INFO] SonarWorker started
+2025-06-02 18:21:21,204 [INFO] SonarWorker stopped
+2025-06-02 18:22:38,129 [INFO] === Air-Sonar enhanced start ===
+2025-06-02 18:22:53,858 [INFO] SonarWorker started
+2025-06-02 18:22:57,215 [INFO] SonarWorker stopped
+2025-06-02 18:24:11,419 [INFO] === Air-Sonar enhanced start ===
+2025-06-02 18:24:30,269 [INFO] === Air-Sonar enhanced start ===
+2025-06-02 18:26:18,545 [INFO] === Air-Sonar enhanced start ===
+2025-06-02 18:26:40,718 [INFO] SonarWorker started
+2025-06-02 18:26:44,992 [INFO] SonarWorker stopped
+2025-06-02 18:27:21,352 [INFO] === Air-Sonar enhanced start ===
+2025-06-02 18:31:54,647 [INFO] === Air-Sonar enhanced start ===
+2025-06-02 18:32:01,332 [INFO] SonarWorker started
+2025-06-02 18:32:04,162 [INFO] SonarWorker stopped
+2025-06-02 18:39:24,090 [INFO] === Air-Sonar enhanced start ===
+2025-06-02 18:39:30,105 [INFO] SonarWorker started
+2025-06-02 18:42:46,864 [INFO] === Air-Sonar enhanced start ===
+2025-06-02 18:42:49,220 [INFO] SonarWorker started
+2025-06-02 18:42:55,383 [INFO] === Air-Sonar enhanced start ===
+2025-06-02 18:42:57,846 [INFO] SonarWorker started
+2025-06-02 18:48:06,965 [INFO] === Air-Sonar enhanced start ===
+2025-06-02 18:48:10,062 [INFO] SonarWorker started
+2025-06-02 18:48:15,628 [INFO] SonarWorker stopped
+2025-06-02 18:48:24,237 [INFO] SonarWorker started
+2025-06-02 18:50:07,115 [INFO] === Air-Sonar enhanced start ===
+2025-06-02 18:50:09,520 [INFO] SonarWorker started
+2025-06-02 18:50:32,618 [INFO] SonarWorker stopped
+2025-06-02 18:53:00,456 [INFO] === Air-Sonar enhanced start ===
+2025-06-02 18:53:04,331 [INFO] SonarWorker started
+2025-06-02 18:54:55,253 [INFO] === Air-Sonar optimized start ===
+2025-06-02 18:55:05,659 [INFO] SonarWorker started (optimized)
+2025-06-02 18:56:03,399 [INFO] SonarWorker stopped
+2025-06-02 19:00:21,140 [INFO] === Air-Sonar optimized start ===
+2025-06-02 19:00:23,434 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-02 19:00:53,232 [INFO] SonarWorker stopped
+2025-06-02 19:09:04,427 [INFO] === Air-Sonar optimized start ===
+2025-06-02 19:09:11,962 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-02 19:10:07,959 [INFO] SonarWorker stopped
+2025-06-02 19:10:16,931 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-02 19:29:35,093 [INFO] SonarWorker stopped
+2025-06-02 19:30:08,962 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-02 19:39:52,114 [INFO] SonarWorker stopped
+2025-06-02 20:23:21,070 [INFO] === Air-Sonar optimized start ===
+2025-06-02 20:23:36,748 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-02 20:24:05,945 [INFO] SonarWorker stopped
+2025-06-02 20:24:10,912 [INFO] === Air-Sonar optimized start ===
+2025-06-02 20:24:14,734 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-02 20:33:35,560 [INFO] SonarWorker stopped
