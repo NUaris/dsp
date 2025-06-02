@@ -700,8 +700,18 @@ class MainWindow(QtWidgets.QMainWindow):
                 for i, corr in enumerate(correlations):
                     if len(corr) > 0:
                         # 时间轴（以毫秒为单位）
-                        half = len(corr) // 2
-                        time_axis = np.arange(-half, half) / FS * 1000  # 转换为毫秒
+                        # corr = correlate(band_signal, chirp_signal, mode='full')
+                        # chirp_signal length N = int(FS * CHIRP_LEN)
+                        # band_signal length M = int(FS * LISTEN_LEN)
+                        # len(corr) = M + N - 1
+                        # Zero lag for correlate(signal_M, reference_N) is at index (N - 1) in the correlation result.
+                        # So, for an element at index `j` in `corr`, its lag is `j - (N - 1)` samples.
+                        
+                        len_chirp_samples = int(FS * CHIRP_LEN)
+                        
+                        lag_indices = np.arange(len(corr)) # Indices from 0 to len(corr)-1
+                        time_axis_samples = lag_indices - (len_chirp_samples - 1)
+                        time_axis = time_axis_samples / FS * 1000  # 转换为毫秒
                         
                         self.corrPlot.ax.plot(time_axis, corr, 
                                             color=colors[i % len(colors)], 

@@ -1389,3 +1389,9 @@ AttributeError: Figure.set() got an unexpected keyword argument 'width'
 2025-06-02 23:00:12,790 [ERROR] Error in _on_wave: x and y must have same first dimension, but have shapes (8818,) and (8819,)
 2025-06-02 23:00:13,291 [ERROR] Error in _on_wave: x and y must have same first dimension, but have shapes (8818,) and (8819,)
 2025-06-02 23:00:13,677 [INFO] SonarWorker stopped
+2025-06-02 23:05:41,593 [INFO] === Air-Sonar optimized start ===
+2025-06-02 23:05:45,706 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-02 23:06:30,357 [INFO] SonarWorker stopped
+2025-06-02 23:06:57,897 [INFO] === Air-Sonar optimized start ===
+2025-06-02 23:07:01,459 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-02 23:11:25,274 [INFO] SonarWorker stopped
