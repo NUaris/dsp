@@ -3422,3 +3422,31 @@ ValueError: The length of `a` must be at least 2.
 2025-06-03 00:11:02,970 [INFO] SonarWorker stopped
 2025-06-03 00:11:50,277 [INFO] === Air-Sonar optimized start ===
 2025-06-03 00:11:54,715 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-03 00:48:48,772 [INFO] === Air-Sonar optimized start ===
+2025-06-03 00:49:13,840 [ERROR] Failed to design filter for band 23000-25000 Hz: Digital filter critical frequencies must be 0 < Wn < 1
+2025-06-03 00:49:14,299 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-03 00:50:25,081 [INFO] SonarWorker stopped
+2025-06-03 00:56:46,884 [INFO] === Air-Sonar optimized start ===
+2025-06-03 00:56:50,834 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-03 01:00:12,712 [INFO] SonarWorker stopped
+2025-06-03 01:00:55,118 [INFO] === Air-Sonar optimized start ===
+2025-06-03 01:01:00,360 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-03 01:03:25,030 [INFO] SonarWorker stopped
+2025-06-03 01:14:32,078 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-03 01:15:40,469 [INFO] SonarWorker stopped
+2025-06-03 01:16:18,314 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-03 01:17:22,743 [INFO] SonarWorker stopped
+2025-06-03 01:30:13,544 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-03 01:30:15,674 [INFO] SonarWorker stopped
+2025-06-03 01:30:39,999 [INFO] === Air-Sonar optimized start ===
+2025-06-03 01:30:45,771 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-03 01:31:26,303 [INFO] === Air-Sonar optimized start ===
+2025-06-03 01:31:49,735 [INFO] === Air-Sonar optimized start ===
+2025-06-03 01:31:53,474 [INFO] SonarWorker started (optimized), utilizing 18 CPU cores.
+2025-06-03 01:32:45,112 [INFO] SonarWorker stopped
+2025-06-03 19:48:14,464 [INFO] === Air-Sonar optimized start ===
+2025-06-03 19:48:20,160 [INFO] SonarWorker started (optimized with full GPU acceleration), utilizing 18 CPU cores.
+2025-06-03 19:49:28,654 [INFO] === Air-Sonar optimized start ===
+2025-06-03 19:49:32,745 [INFO] SonarWorker started (optimized with full GPU acceleration), utilizing 18 CPU cores.
+2025-06-03 19:50:49,258 [INFO] === Air-Sonar optimized start ===
+2025-06-03 19:50:52,658 [INFO] SonarWorker started (optimized with full GPU acceleration), utilizing 18 CPU cores.

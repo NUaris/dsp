@@ -1,8 +1,8 @@
 # coding=utf-8
 
 """
-realtime_sonar.py - 优化版
-~~~~~~~~~~~~~~~~~~~~~~~~~
+realtime_sonar.py - 优化版（使用第一个自相关峰值作为零时刻）
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Windows 平台实时空气声纳系统（最大量程 50 m）优化实现。
 
 优化特点
@@ -11,6 +11,7 @@ Windows 平台实时空气声纳系统（最大量程 50 m）优化实现。
 2. 原始频谱显示：显示未滤波的原始接收信号频谱
 3. 多频融合：SNR计算和置信度加权的距离估计
 4. 自适应更新：根据变化幅度调整绘图频率
+5. 自相关处理：将第一个自相关峰值作为零时刻，避免直流脉冲干扰
 
 Copyright © 2025
 """
@@ -20,7 +21,7 @@ from pathlib import Path
 from threading import Lock
 from collections import deque
 from concurrent.futures import ThreadPoolExecutor
-import math
+
 import numpy as np
 from scipy.signal import chirp, iirfilter, filtfilt, firwin, fftconvolve, correlate
 import pyaudio
@@ -33,50 +34,44 @@ import matplotlib.pyplot as plt
 try:
     import cupy as cp
     GPU_AVAILABLE = True
-    print("GPU (CuPy) Support Enabled")
+    print("GPU (CuPy) 支持已启用")
 except ImportError:
     cp = None
     GPU_AVAILABLE = False
-    print("GPU (CuPy) Support Not Available, using CPU fallback")
+    print("GPU不可用，使用CPU计算")
 
 # OpenGL支持matplotlib
 try:
     import OpenGL.GL as gl
     plt.rcParams['backend'] = 'Qt5Agg'
     OPENGL_AVAILABLE = True
-    print("OpenGL Support Enabled")
+    print("OpenGL 渲染已启用")
 except ImportError:
     OPENGL_AVAILABLE = False
-    print("OpenGL Support Not Available, using software rendering")
+    print("OpenGL不可用，使用默认渲染")
 
 # 设置中文字体支持
 plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans']
 plt.rcParams['axes.unicode_minus'] = False
 
 # ========= 声纳参数 ========= #
-BASE_TEMP = 28.0  # 基准温度 (°C)
-R_MIN, R_MAX = 0.5, 15.0        # m
-c_air = 343.0 * math.sqrt(1 + (BASE_TEMP - 20) / 273.15)  # 简单温度修正
-CHIRP_LEN = 2 * R_MIN / c_air   # s
-LISTEN_LEN = 2 * R_MAX / c_air + 0.003   # 3 ms margin
-CYCLE = CHIRP_LEN + LISTEN_LEN + 0.02    # 再给 20 ms 缓冲
 FS = 48000
-#CHIRP_LEN = 0.05  # 缩短发射声波时长：从0.1s减少到0.05s
-#LISTEN_LEN = 0.15  # 相应缩短接收时长
-#CYCLE = 0.5  # 增大发送间隔：从0.3s增加到0.5s
-#BASE_TEMP = 28.0  # 基准温度 (°C)
+CHIRP_LEN = 0.05  # 缩短发射声波时长：从0.1s减少到0.05s
+LISTEN_LEN = 0.15  # 相应缩短接收时长
+CYCLE = 0.4  # 增大发送间隔：从0.3s增加到0.5s
+BASE_TEMP = 28.0  # 基准温度 (°C)
 SPEED_SOUND_20C = 343.0  # 20°C时的声速 (m/s)
 CHANNELS = 1
 FORMAT = pyaudio.paInt16
 CSV_PATH = Path("distances.csv")
 LOG_PATH = Path("sonar.log")
-BANDS = [(9500,11500),(13500,15500),(17500,19500)]  # 修改为不同频段
+BANDS = [(3000, 7000), (10000, 14000), (17000, 20000)]  # 示例：三个不同频段
 
 # 性能优化参数 - 大幅提高刷新频率和减少卡顿
 PLOT_UPDATE_INTERVAL = 1  # 每次测量都更新图表
 SPECTRUM_UPDATE_INTERVAL = 1  # 每次都更新频谱，提高流畅度
 MAX_HIST_POINTS = 300  # 增加历史点数
-GUI_UPDATE_RATE = 15  # GUI更新频率 (Hz) - 提高到60FPS
+GUI_UPDATE_RATE = 100  # GUI更新频率 (Hz) - 提高到60FPS
 PLOT_DECIMATION = 1  # 绘图数据抽取因子，1表示不抽取
 
 # ========= 日志 ========= #
@@ -96,6 +91,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger("Sonar")
 
+
 # ------------------------------------------------------------------ #
 def calculate_sound_speed(temperature_c):
     """根据温度计算声速 (m/s)
@@ -103,20 +99,29 @@ def calculate_sound_speed(temperature_c):
     """
     return 331.3 + 0.606 * temperature_c
 
+
 # ------------------------------------------------------------------ #
 def generate_chirps(fs=FS, duration=CHIRP_LEN):
-    t = np.linspace(0, duration, int(fs*duration), endpoint=False)
-    chirps = [chirp(t, f0=l, f1=h, t1=duration, method='linear').astype(np.float32)
-              for l, h in BANDS]
+    t = np.linspace(0, duration, int(fs * duration), endpoint=False)
+    chirps = [
+        chirp(t, f0=l, f1=h, t1=duration, method='linear').astype(np.float32)
+        for l, h in BANDS
+    ]
     mix = np.sum(chirps, axis=0)
-    mix *= 0.85*(2**15-1)/np.max(np.abs(mix))
+    mix *= 0.85 * (2**15 - 1) / np.max(np.abs(mix))
     return mix.astype(np.int16), chirps
+
 
 def design_filters(fs=FS):
     filters = []
     for low, high in BANDS:
         try:
-            ba = iirfilter(6, [low/(0.5*fs), high/(0.5*fs)], btype='band', output='ba')  # 降低滤波器阶数
+            ba = iirfilter(
+                6,
+                [low / (0.5 * fs), high / (0.5 * fs)],
+                btype='band',
+                output='ba'
+            )  # 降低滤波器阶数
             if ba is None:
                 raise ValueError(f"iirfilter failed for band {low}-{high} Hz")
             b, a = ba[0], ba[1]
@@ -130,95 +135,100 @@ def design_filters(fs=FS):
             filters.append((b, a, taps))
     return filters
 
-def bandpass(sig, filt):
-    """带通滤波器（FIR + IIR组合）- 如果可用，使用GPU加速"""
-    if GPU_AVAILABLE:
-        return gpu_bandpass(sig, filt)
-    
-    b, a, taps = filt
-    try:
-        # 先用IIR精确控制频带，再用FIR去除噪声
-        y = filtfilt(b, a, sig)
-        return fftconvolve(y, taps, mode='same')
-    except:
-        logger.warning("滤波失败，返回原信号")
-        return sig
 
-# === 自适应阈值峰检测 === #
-def first_strong_peak(corr, fs, min_delay_samples=500):
-    half = corr.size//2
+def bandpass(sig, filt):
+    """
+    如果 a 或 b 长度 < 2，就跳过 filtfilt 只做 FIR 卷积；否则先做 IIR filtfilt 再做 FIR 卷积
+    """
+    b, a, taps = filt
+    # 如果 IIR 系数长度不足，就只用 FIR 卷积
+    if len(a) < 2 or len(b) < 2:
+        return fftconvolve(sig, taps, mode='same')
+    # 正常先做 filtfilt，再卷积 FIR
+    y = filtfilt(b, a, sig)
+    return fftconvolve(y, taps, mode='same')
+
+
+# === 自适应“去除直流脉冲”峰查找（第一个峰作为零时刻） === #
+def first_strong_peak(corr, fs):
+    """
+    对于完整相关序列 corr：
+    - 取正半部分 pos = corr[half:]
+    - 找到 pos 中的最大值索引 ref_idx，视为直接耦合脉冲（零时刻）
+    - 将该位置设为 0，再寻找第二个最大值 peak_idx，作为回波到达时刻
+    - 计算延迟 = peak_idx - ref_idx
+    返回：delay_samples（样本数差），snr_db（Echo 信噪比 dB）
+    """
+    half = corr.size // 2
     pos = corr[half:]
-    if pos.size <= min_delay_samples:
+    if pos.size == 0:
         return None, 0.0
-    pos[:min_delay_samples] = 0       # 去直达
-    
-    # 改进的SNR计算 - 使用GPU加速
-    # 使用前20%作为噪声基准
-    noise_samples = int(len(pos) * 0.2)
-    noise_floor = gpu_mean(pos[:noise_samples] ** 2)  # 噪声功率
-    
-    # 寻找峰值 - 使用GPU加速
-    peak_idx = gpu_argmax(pos)
-    peak_power = pos[peak_idx] ** 2
-    
-    # 计算SNR (dB)
+
+    # 第一个峰：直接耦合脉冲，视为零时刻
+    ref_idx = np.argmax(pos)
+
+    # 创建一份副本，将第一个峰值点清零以便寻找回波
+    pos2 = pos.copy()
+    pos2[ref_idx] = 0
+
+    # 如果除了直流脉冲之外无其他峰，则返回 None
+    if np.all(pos2 == 0):
+        return None, 0.0
+
+    # 第二个峰：回波到达位置
+    peak_idx = np.argmax(pos2)
+
+    # 噪声估计：使用回波峰之前 20% 区域的功率平均值
+    noise_region = int(len(pos2) * 0.2)
+    if noise_region > 0:
+        noise_floor = np.mean(pos2[:noise_region] ** 2)
+    else:
+        noise_floor = 0.0
+
+    peak_power = pos2[peak_idx] ** 2
     if noise_floor > 0:
         snr_db = 10 * np.log10(peak_power / noise_floor)
     else:
         snr_db = 0.0
-    
-    # 检查是否为有效峰值
-    if snr_db < 6.0:  # 至少6dB的SNR
+
+    # 如果 SNR 不足 6 dB，认为无效
+    if snr_db < 6.0:
         return None, 0.0
-        
-    return peak_idx, snr_db
+
+    # 延迟样本数 = 回波峰索引 - 直流峰索引
+    delay_samples = peak_idx - ref_idx
+    return delay_samples, snr_db
+
 
 # === SNR计算和置信度评估 === #
 def calculate_band_confidence(snr, amplitude, band_idx):
     """计算频段置信度
     Args:
-        snr: 信噪比
+        snr: 信噪比 (dB)
         amplitude: 峰值幅度
         band_idx: 频段索引 (0, 1, 2)
     Returns:
-        confidence: 原始置信度 (0-1)，后续会归一化到总和100%
+        confidence: 置信度 (0-1)
     """
     # SNR权重 (SNR越高置信度越高)
     snr_weight = min(snr / 10.0, 1.0)  # 归一化到0-1
-    
+
     # 幅度权重 (幅度越大置信度越高)
     amp_weight = min(amplitude / 0.1, 1.0)  # 归一化到0-1
-    
+
     # 频段权重 (中频段通常更稳定)
     freq_weights = [0.8, 1.0, 0.9]  # 低频、中频、高频
     freq_weight = freq_weights[band_idx]
-    
+
     # 综合置信度
     confidence = (snr_weight * 0.5 + amp_weight * 0.3 + freq_weight * 0.2)
     return min(confidence, 1.0)
 
-def normalize_confidences(confidences):
-    """归一化置信度，确保总和为100%
-    Args:
-        confidences: 各频段置信度列表
-    Returns:
-        normalized_confidences: 归一化后的置信度，总和为100%
-    """
-    confidences = np.array(confidences)
-    total = np.sum(confidences)
-    
-    if total > 0:
-        # 归一化到总和为100%
-        normalized = (confidences / total) * 100.0
-    else:
-        # 如果都为0，则平均分配
-        normalized = np.full_like(confidences, 100.0 / len(confidences))
-    
-    return normalized
 
 # === 简单 1-D Kalman === #
 class ScalarKalman:
-    def __init__(self, q=0.005, r=0.1):  # 调整参数以提高响应速度
+    def __init__(self, q=0.005, r=0.1):
+        """调整参数以提高响应速度"""
         self.x = None  # state
         self.p = 1.0   # covariance
         self.q = q     # process var
@@ -233,13 +243,15 @@ class ScalarKalman:
         # gain
         k = self.p / (self.p + self.r)
         # update
-        self.x += k*(z - self.x)
+        self.x += k * (z - self.x)
         self.p *= (1 - k)
         return self.x
 
+
 # === FFT (dB) === #
 def mag2db(x):
-    return 20*np.log10(np.maximum(np.abs(x), 1e-12))
+    return 20 * np.log10(np.maximum(np.abs(x), 1e-12))
+
 
 # === GPU加速函数 === #
 def gpu_fft(signal):
@@ -254,6 +266,7 @@ def gpu_fft(signal):
     else:
         return np.asarray(np.fft.rfft(signal))
 
+
 def gpu_correlate(a, b):
     """GPU加速的相关计算"""
     if GPU_AVAILABLE and cp is not None:
@@ -267,134 +280,44 @@ def gpu_correlate(a, b):
     else:
         return correlate(a, b, 'full')
 
-def gpu_bandpass(signal, filt):
-    """GPU加速的带通滤波"""
-    if GPU_AVAILABLE and cp is not None:
-        try:
-            b, a, taps = filt
-            signal_gpu = cp.asarray(signal)
-            
-            # 使用FIR滤波（GPU效率更高）
-            taps_gpu = cp.asarray(taps)
-            filtered = cp.convolve(signal_gpu, taps_gpu, mode='same')
-            return cp.asnumpy(filtered)
-        except:
-            return bandpass(signal, filt)
-    else:
-        return bandpass(signal, filt)
-
-def gpu_spectrum(signal):
-    """GPU加速的频谱计算"""
-    if GPU_AVAILABLE and cp is not None:
-        try:
-            signal_gpu = cp.asarray(signal)
-            fft_result = cp.fft.rfft(signal_gpu)
-            magnitude = cp.abs(fft_result)
-            return cp.asnumpy(magnitude)
-        except:
-            return np.abs(np.fft.rfft(signal))
-    else:
-        return np.abs(np.fft.rfft(signal))
-
-def gpu_mag2db(x):
-    """GPU加速的幅度转dB"""
-    if GPU_AVAILABLE and cp is not None:
-        try:
-            x_gpu = cp.asarray(x)
-            # 避免log(0)
-            x_clipped = cp.maximum(x_gpu, 1e-12)
-            db_result = 20 * cp.log10(x_clipped)
-            return cp.asnumpy(db_result)
-        except:
-            return mag2db(x)
-    else:
-        return mag2db(x)
-
-def gpu_argmax(signal):
-    """GPU加速的最大值索引查找"""
-    if GPU_AVAILABLE and cp is not None:
-        try:
-            signal_gpu = cp.asarray(signal)
-            return int(cp.argmax(signal_gpu))
-        except:
-            return np.argmax(signal)
-    else:
-        return np.argmax(signal)
-
-def gpu_mean(signal):
-    """GPU加速的均值计算"""
-    if GPU_AVAILABLE and cp is not None:
-        try:
-            signal_gpu = cp.asarray(signal)
-            return float(cp.mean(signal_gpu))
-        except:
-            return np.mean(signal)
-    else:
-        return np.mean(signal)
-
-def gpu_sqrt(x):
-    """GPU加速的平方根"""
-    if GPU_AVAILABLE and cp is not None:
-        try:
-            x_gpu = cp.asarray(x)
-            return float(cp.sqrt(x_gpu))
-        except:
-            return np.sqrt(x)
-    else:
-        return np.sqrt(x)
 
 # ------------------------------------------------------------------ #
 class AudioIO:
-    """音频输入输出类 - 实现音频隔离，避免扬声器信号干扰麦克风"""
     def __init__(self):
         self.p = pyaudio.PyAudio()
-        self.out = self.p.open(format=FORMAT, channels=CHANNELS,
-                               rate=FS, output=True, frames_per_buffer=1024)
-        self.inp = self.p.open(format=FORMAT, channels=CHANNELS,
-                               rate=FS, input=True,
-                               frames_per_buffer=int(FS*LISTEN_LEN))
+        self.out = self.p.open(
+            format=FORMAT,
+            channels=CHANNELS,
+            rate=FS,
+            output=True,
+            frames_per_buffer=1024
+        )
+        self.inp = self.p.open(
+            format=FORMAT,
+            channels=CHANNELS,
+            rate=FS,
+            input=True,
+            frames_per_buffer=int(FS * LISTEN_LEN)
+        )
         self.lock = Lock()
-        self.silence_buffer = np.zeros(int(FS * 0.01), dtype=np.int16)  # 10ms静音缓冲
-    
-    def play(self, pcm16):  
-        """播放音频，同时确保麦克风在播放期间不录音"""
+
+    def play(self, pcm16):  # int16
         with self.lock:
-            # 播放前添加短暂静音，确保系统稳定
-            self.out.write(self.silence_buffer.tobytes())
-            time.sleep(0.005)  # 5ms等待时间确保系统响应
-            
-            # 播放主信号
             self.out.write(pcm16.tobytes())
-            
-            # 播放后添加静音缓冲，避免残响
-            self.out.write(self.silence_buffer.tobytes())
-            time.sleep(0.005)  # 额外的5ms等待时间
-    
+
     def record(self):
-        """录音，确保在播放完成后才开始录音"""
         with self.lock:
-            # 额外的等待时间，确保播放完全结束
-            time.sleep(0.01)  # 10ms等待播放系统稳定
-            
-            # 清空输入缓冲区，移除任何残留的播放信号
-            try:
-                # 尝试读取并丢弃缓冲区中的旧数据
-                while True:
-                    self.inp.read(1024, exception_on_overflow=False)
-            except:
-                pass  # 缓冲区为空时会抛出异常，这是正常的
-            
-            # 开始正式录音
-            raw = self.inp.read(int(FS*LISTEN_LEN),
-                                exception_on_overflow=False)
-        
-        sig = np.frombuffer(raw, np.int16).astype(np.float32)/2**15
+            raw = self.inp.read(int(FS * LISTEN_LEN), exception_on_overflow=False)
+        sig = np.frombuffer(raw, np.int16).astype(np.float32) / 2**15
         return sig
-    
+
     def close(self):
-        self.out.stop_stream(); self.out.close()
-        self.inp.stop_stream(); self.inp.close()
+        self.out.stop_stream()
+        self.out.close()
+        self.inp.stop_stream()
+        self.inp.close()
         self.p.terminate()
+
 
 # ------------------------------------------------------------------ #
 class SonarWorker(QtCore.QThread):
@@ -409,74 +332,80 @@ class SonarWorker(QtCore.QThread):
         self.audio = AudioIO()
         self.running = False
         self.temperature = 20.0  # 默认温度20°C
-        # 移除了 self.rx_buffer
         self.update_counter = 0  # 更新计数器
-        
+
         # 预计算FFT频率轴（性能优化）
-        self.tx_freq = np.fft.rfftfreq(len(self.tx_pcm), 1/FS)
-        
+        self.tx_freq = np.fft.rfftfreq(len(self.tx_pcm), 1 / FS)
+
         if not CSV_PATH.exists():
             with CSV_PATH.open("w", newline='') as f:
-                csv.writer(f).writerow(["timestamp", "distance", "confidence", "band_snrs"])    
+                csv.writer(f).writerow(["timestamp", "distance", "confidence", "band_snrs"])
+
     def run(self):
         self.running = True
-        num_cores = os.cpu_count() # 获取CPU核心数
-        executor = ThreadPoolExecutor(max_workers=num_cores) # 使用所有核心
-        logger.info(f"SonarWorker started (optimized with full GPU acceleration), utilizing {num_cores} CPU cores.")
-        
+        num_cores = os.cpu_count()  # 获取CPU核心数
+        executor = ThreadPoolExecutor(max_workers=num_cores)  # 使用所有核心
+        logger.info(f"SonarWorker started (optimized), utilizing {num_cores} CPU cores.")
+
         while self.running:
             t0 = time.perf_counter()
             try:
                 # -------- 发射 ----------
                 self.audio.play(self.tx_pcm)
-                
-                # -------- 延时确保音频隔离 ----------
-                time.sleep(CHIRP_LEN + 0.02)  # 等待发射完成 + 20ms缓冲
-                
+
                 # -------- 接收 ----------
                 rx = self.audio.record()
 
-                # -------- 并行滤波+相关（使用GPU加速）----------
-                futs = [executor.submit(self._process_band_gpu, rx, chirp, filt, i)
-                        for i, (chirp, filt) in enumerate(zip(self.chirps, self.filters))]
+                # -------- 并行滤波+相关 ----------
+                futs = [
+                    executor.submit(self._process_band, rx, chirp, filt, i)
+                    for i, (chirp, filt) in enumerate(zip(self.chirps, self.filters))
+                ]
                 results = [f.result() for f in futs]
-                  # -------- 多频融合处理（新的置信度算法）----------
+
+                # -------- 多频融合处理 ----------
                 valid_results = [(dist, conf, snr) for dist, conf, snr in results if dist is not None]
-                
+
                 if valid_results:
-                    distances, raw_confidences, snrs = zip(*valid_results)
-                    
-                    # 归一化置信度，确保总和为100%
-                    normalized_confidences = normalize_confidences(raw_confidences)
-                    
-                    # 使用归一化置信度作为权重进行加权平均
-                    weights = normalized_confidences + 1e-9  # 避免除零
+                    distances, confidences, snrs = zip(*valid_results)
+
+                    # SNR归一化处理
+                    snr_array = np.array(snrs)
+                    if np.max(snr_array) > 0:
+                        normalized_snrs = snr_array / np.max(snr_array) * 100  # 归一化到100%
+                    else:
+                        normalized_snrs = np.zeros_like(snr_array)
+
+                    # 使用归一化的SNR作为权重进行加权平均
+                    weights = normalized_snrs + 1e-9  # 避免除零
                     weighted_dist = np.average(distances, weights=weights)
-                    
+                    avg_confidence = np.mean(normalized_snrs)
+
                     # Kalman滤波
                     dist_kf = self.kf.update(weighted_dist)
-                    
-                    # 发送信号（置信度已归一化为百分比）
-                    self.distanceSig.emit(dist_kf, list(normalized_confidences), np.mean(normalized_confidences))
-                    
+
+                    # 发送信号
+                    self.distanceSig.emit(dist_kf, list(normalized_snrs), avg_confidence)
+
                     # 记录到CSV
                     with CSV_PATH.open("a", newline='') as f:
-                        csv.writer(f).writerow([time.time(), dist_kf, np.mean(normalized_confidences), normalized_confidences.tolist()])
+                        csv.writer(f).writerow(
+                            [time.time(), dist_kf, avg_confidence, normalized_snrs.tolist()]
+                        )
+
                 # -------- 减少绘图频率以提高性能 ----------
                 self.update_counter += 1
                 if self.update_counter % PLOT_UPDATE_INTERVAL == 0:
-                    # 发信号给 GUI (降低频率)
                     band_signals = []
                     correlations = []
-                    
-                    # 计算各频段滤波后的信号和自相关（使用GPU加速）
+
+                    # 计算各频段滤波后的信号和自相关
                     for i, (chirp, filt) in enumerate(zip(self.chirps, self.filters)):
-                        band_y = bandpass(rx, filt)  # 已内置GPU加速
+                        band_y = bandpass(rx, filt)
                         band_signals.append(band_y)
-                        # 使用GPU加速的相关计算
                         corr = gpu_correlate(band_y, chirp)
                         correlations.append(corr)
-                    
+
                     self.waveSig.emit({
                         'rx': rx,
                         'band_signals': band_signals,
@@ -487,41 +416,34 @@ class SonarWorker(QtCore.QThread):
             except Exception:
                 logger.exception("worker loop error")
             # -------- 节拍 ----------
-            time.sleep(max(0, CYCLE - (time.perf_counter()-t0)))
-            
+            time.sleep(max(0, CYCLE - (time.perf_counter() - t0)))
+
         executor.shutdown(wait=False)
         self.audio.close()
-        logger.info("SonarWorker stopped")    
-    
-    def _process_band_gpu(self, rx, chirp_sig, filt, band_idx):
-            
-        '''处理单个频段（GPU加速版本）'''
-        # 使用GPU加速的滤波
-        y = bandpass(rx, filt)  # 已内置GPU加速检查
-        
-        # 使用GPU加速的相关计算
-        corr = gpu_correlate(y, chirp_sig)
-        delay, snr = first_strong_peak(corr, FS)
-        
-        if delay is None:
+        logger.info("SonarWorker stopped")
+
+    def _process_band(self, rx, chirp_sig, filt, band_idx):
+        """处理单个频段"""
+        y = bandpass(rx, filt)
+        corr = correlate(y, chirp_sig, 'full')
+        delay_samples, snr = first_strong_peak(corr, FS)
+
+        if delay_samples is None:
             return None, 0.0, 0.0
-            
+
         # 计算距离
         sound_speed = calculate_sound_speed(self.temperature)
-        distance = (delay/FS)*sound_speed/2
-        
+        distance = (delay_samples / FS) * sound_speed / 2
+
         # 计算置信度
         peak_amplitude = np.max(np.abs(corr))
         confidence = calculate_band_confidence(snr, peak_amplitude, band_idx)
-        
-        return distance, confidence, snr
 
-    def _process_band(self, rx, chirp_sig, filt, band_idx):
-        """处理单个频段（兼容版本）"""
-        return self._process_band_gpu(rx, chirp_sig, filt, band_idx)
+        return distance, confidence, snr
 
     def stop(self):
         self.running = False
+
 
 # ------------------------------------------------------------------ #
 class MplCanvas(FigureCanvas):
@@ -531,21 +453,22 @@ class MplCanvas(FigureCanvas):
         # 设置性能优化参数
         fig.patch.set_facecolor('white')
         fig.patch.set_alpha(1.0)
-        
+
         self.ax = fig.add_subplot(111)
         self.ax.set_title(title, fontsize=12, fontweight='bold', pad=15)
-        
+
         # 性能优化：设置绘图参数
         self.ax.set_rasterized(True)  # 光栅化以提高性能
-        
+
         super().__init__(fig)
-          # 性能优化：启用缓存和减少重绘
-        self.setMinimumSize(int(width*dpi//2), int(height*dpi//2))  # 设置最小尺寸防止过度缩放
-        
+        # 性能优化：启用缓存和减少重绘
+        self.setMinimumSize(int(width * dpi // 2), int(height * dpi // 2))  # 设置最小尺寸防止过度缩放
+
     def clear_and_plot(self, *args, **kwargs):
         """优化的清空和绘图方法"""
         self.ax.clear()
         return self.ax
+
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -587,7 +510,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 background: white;
             }
         """)
-        
+
         # -------- 控件 --------
         self.label = QtWidgets.QLabel("距离: -- m")
         self.label.setStyleSheet("""
@@ -600,7 +523,7 @@ class MainWindow(QtWidgets.QMainWindow):
             border-radius: 15px;
             padding: 15px;
         """)
-        
+
         # 置信度显示
         self.confidence_label = QtWidgets.QLabel("置信度: --")
         self.confidence_label.setStyleSheet("""
@@ -612,7 +535,7 @@ class MainWindow(QtWidgets.QMainWindow):
             border-radius: 8px;
             padding: 8px;
         """)
-        
+
         # 温度控制
         self.temp_label = QtWidgets.QLabel("环境温度 (°C):")
         self.temp_label.setStyleSheet("font-size: 14pt; color: #34495e; font-weight: bold;")
@@ -621,7 +544,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.temp_spinbox.setValue(20)
         self.temp_spinbox.setSuffix(" °C")
         self.temp_spinbox.valueChanged.connect(self.on_temp_changed)
-        
+
         self.btnStart = QtWidgets.QPushButton("开始测量")
         self.btnStop = QtWidgets.QPushButton("停止测量")
         self.btnStop.setEnabled(False)
@@ -634,23 +557,25 @@ class MainWindow(QtWidgets.QMainWindow):
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                     stop:0 #f66356, stop:1 #e34f4f);
             }
-        """)          # 波形 & 频谱 - 修改为新的布局，调整尺寸以减少卡顿
+        """)
+
+        # 波形 & 频谱 - 修改为新的布局，调整尺寸以减少卡顿
         self.txSpec = MplCanvas("发射信号频谱分析", width=6, height=4)
         self.rxSpec = MplCanvas("接收信号原始频谱", width=6, height=4)
-        
+
         # 三个自相关图 - 减小尺寸提高性能
         self.corrPlots = [
-            MplCanvas(f"频段{i+1}自相关 ({BANDS[i][0]}-{BANDS[i][1]}Hz)", width=5, height=3) 
+            MplCanvas(f"频段{i+1}自相关 ({BANDS[i][0]}-{BANDS[i][1]}Hz)", width=5, height=3)
             for i in range(3)
         ]
-        
+
         # 三个频段的频谱图（不是时域信号） - 减小尺寸提高性能
         self.bandSpecPlots = [
-            MplCanvas(f"频段{i+1}滤波频谱 ({BANDS[i][0]}-{BANDS[i][1]}Hz)", width=5, height=3) 
+            MplCanvas(f"频段{i+1}滤波频谱 ({BANDS[i][0]}-{BANDS[i][1]}Hz)", width=5, height=3)
             for i in range(3)
-        ]  
+        ]
         self.hist = MplCanvas("距离历史曲线", width=16, height=3.5)
-        
+
         # 为图表添加边框样式
         chart_style = """
             border: 2px solid #34495e;
@@ -665,7 +590,7 @@ class MainWindow(QtWidgets.QMainWindow):
         for plot in self.bandSpecPlots:
             plot.setStyleSheet(chart_style)
         self.hist.setStyleSheet(chart_style)
-        
+
         # -------- 布局 --------
         # 顶部控制区
         control_frame = QtWidgets.QFrame()
@@ -681,7 +606,7 @@ class MainWindow(QtWidgets.QMainWindow):
         control_layout.addWidget(self.btnStart)
         control_layout.addWidget(self.btnStop)
         control_layout.addStretch()
-        
+
         # 温度控制区
         temp_layout = QtWidgets.QHBoxLayout()
         temp_layout.addWidget(self.temp_label)
@@ -690,7 +615,9 @@ class MainWindow(QtWidgets.QMainWindow):
         control_layout.addLayout(temp_layout)
         control_layout.addStretch()
         control_layout.addWidget(self.confidence_label)
-        control_layout.addWidget(self.label)          # 图表网格 - 修改为新的布局：第一行2个，下面3列
+        control_layout.addWidget(self.label)
+
+        # 图表网格 - 修改为新的布局：第一行2个，下面3列
         g = QtWidgets.QGridLayout()
         g.setSpacing(8)  # 减少间距以节省空间
         # 第一行：发射频谱、接收频谱
@@ -704,18 +631,18 @@ class MainWindow(QtWidgets.QMainWindow):
         g.addWidget(self.bandSpecPlots[0], 2, 0)
         g.addWidget(self.bandSpecPlots[1], 2, 1)
         g.addWidget(self.bandSpecPlots[2], 2, 2)
-        
+
         # 主布局
         vbox = QtWidgets.QVBoxLayout()
         vbox.setSpacing(15)
         vbox.addWidget(control_frame)
         vbox.addLayout(g)
         vbox.addWidget(self.hist)
-        
+
         central = QtWidgets.QWidget()
         central.setLayout(vbox)
         self.setCentralWidget(central)
-        
+
         # -------- 信号 --------
         self.btnStart.clicked.connect(self.start)
         self.btnStop.clicked.connect(self.stop)
@@ -723,7 +650,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.time_hist = []
         self.confidence_hist = []
         self.start_time = None
-        self.worker = None        # 性能优化：减少重绘并添加绘图缓存
+        self.worker = None  # 性能优化：减少重绘并添加绘图缓存
         self.last_update_time = 0
         self.min_update_interval = 1.0 / GUI_UPDATE_RATE  # 基于GUI_UPDATE_RATE计算更新间隔
         self.plot_cache = {}  # 绘图缓存
@@ -732,82 +659,99 @@ class MainWindow(QtWidgets.QMainWindow):
     def on_temp_changed(self, value):
         """温度改变时更新worker的温度值"""
         if self.worker:
-            self.worker.temperature = float(value)    # --- worker 信号槽 ---
+            self.worker.temperature = float(value)
+
     @QtCore.pyqtSlot(float, list, float)
     def _on_dist(self, d, snrs, confidence):
         current_time = time.time()
-        
+
         # 性能优化：限制更新频率
         if current_time - self.last_update_time < self.min_update_interval:
             return
         self.last_update_time = current_time
-        
+
         if self.start_time is None:
             self.start_time = current_time
-        
+
         elapsed_time = current_time - self.start_time
-        
+
         # 更新显示
         self.label.setText(f"距离: {d:6.2f} m")
         self.confidence_label.setText(f"置信度: {confidence:.1f}% | SNR: {snrs}")
-        
+
         # 添加到历史数据
         self.dist_hist.append(d)
         self.time_hist.append(elapsed_time)
         self.confidence_hist.append(confidence)
-        
+
         # 限制历史数据长度（性能优化）
         if len(self.dist_hist) > MAX_HIST_POINTS:
             self.dist_hist = self.dist_hist[-MAX_HIST_POINTS:]
             self.time_hist = self.time_hist[-MAX_HIST_POINTS:]
             self.confidence_hist = self.confidence_hist[-MAX_HIST_POINTS:]
-        
+
         # 绘制距离历史曲线 - 改善视觉效果
         self.hist.ax.clear()
         self.hist.ax.grid(True, alpha=0.4, linewidth=0.8)
         self.hist.ax.set_title("距离历史曲线 (置信度加权)", fontsize=16, fontweight='bold', pad=15)
-        
+
         if len(self.time_hist) > 1:
             # 根据置信度设置颜色
-            colors = ['#e74c3c' if c < 30 else '#f39c12' if c < 70 else '#27ae60' 
-                     for c in self.confidence_hist]
-            
+            colors = [
+                '#e74c3c' if c < 30 else '#f39c12' if c < 70 else '#27ae60'
+                for c in self.confidence_hist
+            ]
+
             # 绘制主曲线
-            self.hist.ax.plot(self.time_hist, self.dist_hist, '-', 
-                             color='#3498db', linewidth=2, alpha=0.8)
-            
+            self.hist.ax.plot(
+                self.time_hist,
+                self.dist_hist,
+                '-',
+                color='#3498db',
+                linewidth=2,
+                alpha=0.8
+            )
+
             # 根据置信度绘制散点
-            self.hist.ax.scatter(self.time_hist, self.dist_hist, 
-                               c=colors, s=30, alpha=0.8, edgecolors='white', linewidth=1)
-            
+            self.hist.ax.scatter(
+                self.time_hist,
+                self.dist_hist,
+                c=colors,
+                s=30,
+                alpha=0.8,
+                edgecolors='white',
+                linewidth=1
+            )
+
             # 添加填充区域
-            self.hist.ax.fill_between(self.time_hist, self.dist_hist, alpha=0.15, color='#3498db')
-            
-            # 根据置信度绘制散点
-            self.hist.ax.scatter(self.time_hist, self.dist_hist, 
-                               c=colors, s=30, alpha=0.8, edgecolors='white', linewidth=1)
-            
-            # 添加填充区域
-            self.hist.ax.fill_between(self.time_hist, self.dist_hist, alpha=0.15, color='#3498db')
-        
+            self.hist.ax.fill_between(
+                self.time_hist,
+                self.dist_hist,
+                alpha=0.15,
+                color='#3498db'
+            )
+
         self.hist.ax.set_xlabel("时间 (s)", fontsize=14, fontweight='bold')
         self.hist.ax.set_ylabel("距离 (m)", fontsize=14, fontweight='bold')
         self.hist.ax.tick_params(labelsize=12)
-        self.hist.ax.set_xlim(max(0, elapsed_time-60), elapsed_time+2)  # 显示最近60秒
-        
+        self.hist.ax.set_xlim(max(0, elapsed_time - 60), elapsed_time + 2)  # 显示最近60秒
+
         if self.dist_hist:
             y_range = max(self.dist_hist) - min(self.dist_hist)
             if y_range > 0:
-                self.hist.ax.set_ylim(min(self.dist_hist)-y_range*0.15, 
-                                     max(self.dist_hist)+y_range*0.15)
-        
+                self.hist.ax.set_ylim(
+                    min(self.dist_hist) - y_range * 0.15,
+                    max(self.dist_hist) + y_range * 0.15
+                )
+
         # 美化坐标轴
         self.hist.ax.spines['top'].set_visible(False)
         self.hist.ax.spines['right'].set_visible(False)
         self.hist.ax.spines['left'].set_linewidth(2)
         self.hist.ax.spines['bottom'].set_linewidth(2)
-        
+
         self.hist.draw()
+
     @QtCore.pyqtSlot(dict)
     def _on_wave(self, data):
         try:
@@ -816,43 +760,48 @@ class MainWindow(QtWidgets.QMainWindow):
             band_signals = data.get('band_signals', [])
             correlations = data.get('correlations', [])
             update_spectrum = data.get('update_spectrum', True)
-            
+
             # 定义颜色
             colors = ['#e74c3c', '#f39c12', '#9b59b6']
-            
+
             # 性能优化：数据抽取（每PLOT_DECIMATION个点取一个）
             if len(rx) > 1000 and PLOT_DECIMATION > 1:
                 rx_decimated = rx[::PLOT_DECIMATION]
             else:
                 rx_decimated = rx
-            
+
             # 发射信号频谱（使用缓存和抽取）
             if update_spectrum and hasattr(self, 'worker') and self.worker:
                 cache_key = 'tx_spectrum'
-                if (cache_key not in self.plot_cache or 
-                    current_time - self.plot_cache[cache_key]['timestamp'] > self.spectrum_cache_timeout):
-                    
+                if (cache_key not in self.plot_cache or
+                        current_time - self.plot_cache[cache_key]['timestamp'] > self.spectrum_cache_timeout):
+
                     tx_mixed = self.worker.tx_pcm / 32768.0  # 归一化
                     # 数据抽取
                     if len(tx_mixed) > 1000 and PLOT_DECIMATION > 1:
                         tx_mixed = tx_mixed[::PLOT_DECIMATION]
-                    
-                    f_tx = np.fft.rfftfreq(len(tx_mixed), PLOT_DECIMATION/FS)
+
+                    f_tx = np.fft.rfftfreq(len(tx_mixed), PLOT_DECIMATION / FS)
                     spec_tx = mag2db(np.fft.rfft(tx_mixed))
-                    
+
                     # 缓存结果
                     self.plot_cache[cache_key] = {
                         'timestamp': current_time,
                         'f_tx': f_tx,
                         'spec_tx': spec_tx
                     }
-                
+
                 # 使用缓存数据
                 cached_data = self.plot_cache[cache_key]
-                
+
                 self.txSpec.ax.clear()
-                self.txSpec.ax.plot(cached_data['f_tx']/1000, cached_data['spec_tx'], 
-                                  color='#27ae60', linewidth=2.0, alpha=0.9)  # 减小线宽
+                self.txSpec.ax.plot(
+                    cached_data['f_tx'] / 1000,
+                    cached_data['spec_tx'],
+                    color='#27ae60',
+                    linewidth=2.0,
+                    alpha=0.9
+                )  # 减小线宽
                 self.txSpec.ax.grid(True, alpha=0.3, linewidth=0.5)  # 减小网格线宽
                 self.txSpec.ax.set_xlabel("频率 (kHz)", fontsize=10, fontweight='bold')  # 减小字体
                 self.txSpec.ax.set_ylabel("幅度 (dB)", fontsize=10, fontweight='bold')
@@ -860,18 +809,25 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.txSpec.ax.tick_params(labelsize=9)
                 # 高亮频带区域
                 for low, high in BANDS:
-                    self.txSpec.ax.axvspan(low/1000, high/1000, alpha=0.12, color='#27ae60')
+                    self.txSpec.ax.axvspan(low / 1000, high / 1000, alpha=0.12, color='#27ae60')
                 # 美化坐标轴
                 self.txSpec.ax.spines['top'].set_visible(False)
                 self.txSpec.ax.spines['right'].set_visible(False)
                 self.txSpec.ax.spines['left'].set_linewidth(1.0)  # 减小边框线宽
                 self.txSpec.ax.spines['bottom'].set_linewidth(1.0)
-                self.txSpec.draw()                
+                self.txSpec.draw()
+
                 # ---- Rx 原始频谱 ----
-                f_rx = np.fft.rfftfreq(rx_decimated.size, PLOT_DECIMATION/FS)
+                f_rx = np.fft.rfftfreq(rx_decimated.size, PLOT_DECIMATION / FS)
                 spec_rx = mag2db(np.fft.rfft(rx_decimated))
                 self.rxSpec.ax.clear()
-                self.rxSpec.ax.plot(f_rx/1000, spec_rx, color='#c0392b', linewidth=2.0, alpha=0.8)
+                self.rxSpec.ax.plot(
+                    f_rx / 1000,
+                    spec_rx,
+                    color='#c0392b',
+                    linewidth=2.0,
+                    alpha=0.8
+                )
                 self.rxSpec.ax.grid(True, alpha=0.3, linewidth=0.5)  # 减小网格线宽
                 self.rxSpec.ax.set_xlabel("频率 (kHz)", fontsize=10, fontweight='bold')
                 self.rxSpec.ax.set_ylabel("幅度 (dB)", fontsize=10, fontweight='bold')
@@ -879,15 +835,16 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.rxSpec.ax.tick_params(labelsize=9)
                 # 高亮频带区域
                 for low, high in BANDS:
-                    self.rxSpec.ax.axvspan(low/1000, high/1000, alpha=0.12, color='#c0392b')
+                    self.rxSpec.ax.axvspan(low / 1000, high / 1000, alpha=0.12, color='#c0392b')
                 # 美化坐标轴
                 self.rxSpec.ax.spines['top'].set_visible(False)
                 self.rxSpec.ax.spines['right'].set_visible(False)
                 self.rxSpec.ax.spines['left'].set_linewidth(1.0)
                 self.rxSpec.ax.spines['bottom'].set_linewidth(1.0)
-                self.rxSpec.draw()              # ---- 三个独立的自相关函数图 ----
+                self.rxSpec.draw()
+
+            # ---- 三个独立的自相关函数图 ----
             if correlations:
-                colors = ['#e74c3c', '#f39c12', '#9b59b6']
                 for i, corr in enumerate(correlations[:3]):  # 最多3个频段
                     if len(corr) > 0:
                         # 数据抽取以提高性能
@@ -895,22 +852,30 @@ class MainWindow(QtWidgets.QMainWindow):
                             corr_decimated = corr[::PLOT_DECIMATION]
                         else:
                             corr_decimated = corr
-                        
+
                         # 时间轴（以毫秒为单位）
                         len_chirp_samples = int(FS * CHIRP_LEN)
                         lag_indices = np.arange(len(corr_decimated))
                         time_axis_samples = lag_indices * PLOT_DECIMATION - (len_chirp_samples - 1)
                         time_axis = time_axis_samples / FS * 1000  # 转换为毫秒
-                        
+
                         self.corrPlots[i].ax.clear()
-                        self.corrPlots[i].ax.plot(time_axis, corr_decimated, 
-                                                color=colors[i % len(colors)], 
-                                                linewidth=1.5, alpha=0.9)  # 减小线宽
+                        self.corrPlots[i].ax.plot(
+                            time_axis,
+                            corr_decimated,
+                            color=colors[i % len(colors)],
+                            linewidth=1.5,
+                            alpha=0.9
+                        )  # 减小线宽
                         self.corrPlots[i].ax.grid(True, alpha=0.3, linewidth=0.5)  # 减小网格线宽
                         self.corrPlots[i].ax.set_xlabel("时间延迟 (ms)", fontsize=9, fontweight='bold')
                         self.corrPlots[i].ax.set_ylabel("相关系数", fontsize=9, fontweight='bold')
-                        self.corrPlots[i].ax.set_title(f"频段{i+1}自相关 ({BANDS[i][0]}-{BANDS[i][1]}Hz)", 
-                                                     fontsize=10, fontweight='bold', pad=8)
+                        self.corrPlots[i].ax.set_title(
+                            f"频段{i+1}自相关 ({BANDS[i][0]}-{BANDS[i][1]}Hz)",
+                            fontsize=10,
+                            fontweight='bold',
+                            pad=8
+                        )
                         self.corrPlots[i].ax.tick_params(labelsize=8)
                         # 美化坐标轴
                         self.corrPlots[i].ax.spines['top'].set_visible(False)
@@ -918,24 +883,32 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.corrPlots[i].ax.spines['left'].set_linewidth(1.0)
                         self.corrPlots[i].ax.spines['bottom'].set_linewidth(1.0)
                         self.corrPlots[i].draw()
-            
+
             # ---- 各频段滤波信号的频谱图 ----
             if band_signals:
                 for i, band_signal in enumerate(band_signals[:3]):  # 最多3个频段
                     if len(band_signal) > 0:
                         # 计算频谱
-                        f_band = np.fft.rfftfreq(len(band_signal), 1/FS)
+                        f_band = np.fft.rfftfreq(len(band_signal), 1 / FS)
                         spec_band = mag2db(np.fft.rfft(band_signal))
-                        
+
                         self.bandSpecPlots[i].ax.clear()
-                        self.bandSpecPlots[i].ax.plot(f_band, spec_band, 
-                                                    color=colors[i % len(colors)], 
-                                                    linewidth=2.0, alpha=0.9)
+                        self.bandSpecPlots[i].ax.plot(
+                            f_band,
+                            spec_band,
+                            color=colors[i % len(colors)],
+                            linewidth=2.0,
+                            alpha=0.9
+                        )
                         self.bandSpecPlots[i].ax.grid(True, alpha=0.4, linewidth=0.8)
                         self.bandSpecPlots[i].ax.set_xlabel("频率 (Hz)", fontsize=10, fontweight='bold')
                         self.bandSpecPlots[i].ax.set_ylabel("幅度 (dB)", fontsize=10, fontweight='bold')
-                        self.bandSpecPlots[i].ax.set_title(f"频段{i+1}滤波频谱 ({BANDS[i][0]}-{BANDS[i][1]}Hz)", 
-                                                         fontsize=12, fontweight='bold', pad=10)
+                        self.bandSpecPlots[i].ax.set_title(
+                            f"频段{i+1}滤波频谱 ({BANDS[i][0]}-{BANDS[i][1]}Hz)",
+                            fontsize=12,
+                            fontweight='bold',
+                            pad=10
+                        )
                         self.bandSpecPlots[i].ax.tick_params(labelsize=9)
                         # 高亮对应频带区域
                         low, high = BANDS[i]
@@ -950,7 +923,7 @@ class MainWindow(QtWidgets.QMainWindow):
             logger.error(f"Error in _on_wave: {e}")
             traceback.print_exc()
 
-    # --- 控制 ---
+    # --- 控制 --- #
     def start(self):
         self.worker = SonarWorker()
         self.worker.temperature = float(self.temp_spinbox.value())
@@ -977,6 +950,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.stop()
         e.accept()
 
+
 # ------------------------------------------------------------------ #
 def main():
     logger.info("=== Air-Sonar optimized start ===")
@@ -985,6 +959,7 @@ def main():
     win.resize(1400, 900)  # 增大窗口尺寸以适应更大的图表
     win.show()
     sys.exit(app.exec_())
+
 
 if __name__ == "__main__":
     try:
