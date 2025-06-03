@@ -71,7 +71,8 @@ class Config:
     CYCLE_MARGIN: float = 0.02
     CHANNELS: int = 1
     FORMAT: int = pyaudio.paInt16
-    BANDS: tuple = ((9500,11500),(13500,15500),(17500,19500))
+    # BANDS: tuple = ((9500,11500),(13500,15500),(17500,19500))
+    BANDS: tuple = ((3000,5000),(3000,5000),(3000,5000))
     PLOT_UPDATE_INTERVAL: int = 1
     SPECTRUM_UPDATE_INTERVAL: int = 1
     MAX_HIST_POINTS: int = 300
@@ -197,7 +198,7 @@ def bandpass(sig, filt):
 
 # === Adaptive threshold peak detection === #
 def first_strong_peak(corr, fs, min_delay_samples=None):
-    # PERF: SNR噪声窗改为静音后首5ms
+    # PERF: 5ms
     if min_delay_samples is None:
         min_delay_samples = int(fs * cfg.CHIRP_LEN * 1.2)
     half = corr.size//2
@@ -1059,14 +1060,18 @@ class MainWindow(QtWidgets.QMainWindow):
             self.txSpec.ax.grid(True, alpha=0.3)
             for band in cfg.BANDS:
                 self.txSpec.ax.axvspan(band[0]/1000, band[1]/1000, color='#b3e5fc', alpha=0.25, lw=0)
-            self.txSpec.draw()
-            # ---- Rx original spectrum ----
+            self.txSpec.draw()            # ---- Rx original spectrum ----
             f_rx = np.fft.rfftfreq(rx.size, 1/cfg.FS)
-            spec_rx = mag2db(np.fft.rfft(rx))
+            spec_rx = np.abs(np.fft.rfft(rx))
             self.rxSpec.plot_line(f_rx/1000, spec_rx, color='#c0392b', linewidth=2.0, alpha=0.8)
             self.rxSpec.ax.set_xlabel("Frequency (kHz)")
-            self.rxSpec.ax.set_ylabel("Magnitude (dB)")
+            self.rxSpec.ax.set_ylabel("Amplitude")
             self.rxSpec.ax.grid(True, alpha=0.3)
+            # Auto-adaptive axes: x-axis auto-scales, y-axis starts from 0 and auto-scales to max
+            self.rxSpec.ax.relim()
+            self.rxSpec.ax.autoscale_view()
+            self.rxSpec.ax.set_ylim(bottom=0)
+            self.rxSpec.draw()
             # ---- Band spectrum and correlation plots (use worker precomputed data) ----
             for i in range(3):
                 # Plot band_spectra
