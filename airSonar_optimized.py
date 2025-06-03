@@ -1,23 +1,23 @@
 # coding=utf-8
 
 """
-realtime_sonar.py - 优化版
-~~~~~~~~~~~~~~~~~~~~~~~~~
-Windows 平台实时空气声纳系统（最大量程 50 m）优化实现。
+realtime_sonar.py - Optimized Version
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Real-time air sonar system for Windows platform with maximum range of 50m.
 
-优化特点
----------
-1. 性能优化：减少绘图频率、优化数据处理、缓存计算结果
-2. 原始频谱显示：显示未滤波的原始接收信号频谱
-3. 多频融合：SNR计算和置信度加权的距离估计
-4. 自适应更新：根据变化幅度调整绘图频率
+Optimization Features
+--------------------
+1. Performance optimization: reduced plotting frequency, optimized data processing, cached calculations
+2. Raw spectrum display: shows unfiltered raw received signal spectrum
+3. Multi-frequency fusion: SNR calculation and confidence-weighted distance estimation
+4. Adaptive updates: adjusts plotting frequency based on change magnitude
 
 Copyright © 2025
 """
 
-import sys, time, csv, logging, queue, math, os, traceback
+import sys, time, csv, logging, queue, math, os, traceback, faulthandler, signal
 from pathlib import Path
-from threading import Lock
+from threading import Lock, Event, Thread, Timer
 from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 import math
@@ -29,7 +29,7 @@ from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 
-# GPU支持
+# GPU Support
 try:
     import cupy as cp
     GPU_AVAILABLE = True
@@ -39,7 +39,7 @@ except ImportError:
     GPU_AVAILABLE = False
     print("GPU (CuPy) Support Not Available, using CPU fallback")
 
-# OpenGL支持matplotlib
+# OpenGL support for matplotlib
 try:
     import OpenGL.GL as gl
     plt.rcParams['backend'] = 'Qt5Agg'
@@ -49,38 +49,53 @@ except ImportError:
     OPENGL_AVAILABLE = False
     print("OpenGL Support Not Available, using software rendering")
 
-# 设置中文字体支持
-plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans']
+# Set font support for better display
+plt.rcParams['font.sans-serif'] = ['DejaVu Sans', 'Arial', 'sans-serif']
 plt.rcParams['axes.unicode_minus'] = False
 
-# ========= 声纳参数 ========= #
-BASE_TEMP = 28.0  # 基准温度 (°C)
+# ========= Sonar Parameters ========= #
+BASE_TEMP = 28.0  # Base temperature (°C)
 R_MIN, R_MAX = 0.5, 15.0        # m
-c_air = 343.0 * math.sqrt(1 + (BASE_TEMP - 20) / 273.15)  # 简单温度修正
+c_air = 343.0 * math.sqrt(1 + (BASE_TEMP - 20) / 273.15)  # Simple temperature correction
 CHIRP_LEN = 2 * R_MIN / c_air   # s
 LISTEN_LEN = 2 * R_MAX / c_air + 0.003   # 3 ms margin
-CYCLE = CHIRP_LEN + LISTEN_LEN + 0.02    # 再给 20 ms 缓冲
+CYCLE = CHIRP_LEN + LISTEN_LEN + 0.02    # Add 20 ms buffer
 FS = 48000
-#CHIRP_LEN = 0.05  # 缩短发射声波时长：从0.1s减少到0.05s
-#LISTEN_LEN = 0.15  # 相应缩短接收时长
-#CYCLE = 0.5  # 增大发送间隔：从0.3s增加到0.5s
-#BASE_TEMP = 28.0  # 基准温度 (°C)
-SPEED_SOUND_20C = 343.0  # 20°C时的声速 (m/s)
+#CHIRP_LEN = 0.05  # Reduced chirp duration: from 0.1s to 0.05s
+#LISTEN_LEN = 0.15  # Correspondingly reduced listen duration
+#CYCLE = 0.5  # Increased transmission interval: from 0.3s to 0.5s
+#BASE_TEMP = 28.0  # Base temperature (°C)
+SPEED_SOUND_20C = 343.0  # Sound speed at 20°C (m/s)
 CHANNELS = 1
 FORMAT = pyaudio.paInt16
 CSV_PATH = Path("distances.csv")
 LOG_PATH = Path("sonar.log")
-BANDS = [(9500,11500),(13500,15500),(17500,19500)]  # 修改为不同频段
+BANDS = [(9500,11500),(13500,15500),(17500,19500)]  # Different frequency bands
 
-# 性能优化参数 - 大幅提高刷新频率和减少卡顿
-PLOT_UPDATE_INTERVAL = 1  # 每次测量都更新图表
-SPECTRUM_UPDATE_INTERVAL = 1  # 每次都更新频谱，提高流畅度
-MAX_HIST_POINTS = 300  # 增加历史点数
-GUI_UPDATE_RATE = 15  # GUI更新频率 (Hz) - 提高到60FPS
-PLOT_DECIMATION = 1  # 绘图数据抽取因子，1表示不抽取
+# Performance optimization parameters - significantly improved refresh rate and reduced stuttering
+PLOT_UPDATE_INTERVAL = 1  # Update charts every measurement
+SPECTRUM_UPDATE_INTERVAL = 1  # Update spectrum every time for better fluidity
+MAX_HIST_POINTS = 300  # Increased history points
+GUI_UPDATE_RATE = 30  # GUI update frequency (Hz) - improved to 60FPS
+PLOT_DECIMATION = 1  # Plot data decimation factor, 1 means no decimation
 
-# ========= 日志 ========= #
-# 设置控制台编码为UTF-8
+# ========= Logging & Monitoring ========= #
+# Register faulthandler for debugging thread deadlocks and crashes
+faulthandler.enable()
+try:
+    # Check if register function exists in faulthandler
+    if hasattr(faulthandler, 'register'):
+        # Windows doesn't have SIGUSR1, use SIGABRT instead
+        if sys.platform != "win32" and hasattr(signal, 'SIGUSR1'):
+            faulthandler.register(signal.SIGUSR1)
+        elif hasattr(signal, 'SIGABRT'):
+            faulthandler.register(signal.SIGABRT)  # Use SIGABRT on Windows
+    else:
+        print("faulthandler.register is not available on this system")
+except Exception as e:
+    print(f"Could not register faulthandler: {e}")
+
+# Set console encoding to UTF-8
 if sys.platform == "win32":
     import io
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
@@ -96,10 +111,17 @@ logging.basicConfig(
 )
 logger = logging.getLogger("Sonar")
 
+# ========= Thread Safety Settings ========= #
+LOCK_TIMEOUT = 2.0        # Lock timeout in seconds
+QUEUE_TIMEOUT = 1.0       # Queue operations timeout in seconds
+HEARTBEAT_INTERVAL = 0.1  # Heartbeat check interval in seconds
+HEARTBEAT_TIMEOUT = 0.5   # Heartbeat timeout in seconds
+MAX_RESTART_ATTEMPTS = 3  # Maximum number of worker restart attempts
+
 # ------------------------------------------------------------------ #
 def calculate_sound_speed(temperature_c):
-    """根据温度计算声速 (m/s)
-    公式: v = 331.3 + 0.606 * T (T为摄氏度)
+    """Calculate sound speed (m/s) based on temperature
+    Formula: v = 331.3 + 0.606 * T (T in Celsius)
     """
     return 331.3 + 0.606 * temperature_c
 
@@ -116,109 +138,109 @@ def design_filters(fs=FS):
     filters = []
     for low, high in BANDS:
         try:
-            ba = iirfilter(6, [low/(0.5*fs), high/(0.5*fs)], btype='band', output='ba')  # 降低滤波器阶数
+            ba = iirfilter(6, [low/(0.5*fs), high/(0.5*fs)], btype='band', output='ba')  # Reduced filter order
             if ba is None:
                 raise ValueError(f"iirfilter failed for band {low}-{high} Hz")
             b, a = ba[0], ba[1]
-            taps = firwin(61, [low, high], fs=fs, pass_zero=False, window='hamming')  # 减少FIR长度
+            taps = firwin(61, [low, high], fs=fs, pass_zero=False, window='hamming')  # Reduced FIR length
             filters.append((b, a, taps))
-        except Exception as e:
+        except Exception as e:            
             logger.error(f"Failed to design filter for band {low}-{high} Hz: {e}")
-            # 使用默认滤波器参数
+            # Use default filter parameters
             b, a = [1], [1]
             taps = np.array([1])
             filters.append((b, a, taps))
     return filters
 
 def bandpass(sig, filt):
-    """带通滤波器（FIR + IIR组合）- 如果可用，使用GPU加速"""
+    """Bandpass filter (FIR + IIR combination) - uses GPU acceleration if available"""
     if GPU_AVAILABLE:
         return gpu_bandpass(sig, filt)
     
     b, a, taps = filt
     try:
-        # 先用IIR精确控制频带，再用FIR去除噪声
+        # First use IIR for precise frequency control, then FIR for noise removal
         y = filtfilt(b, a, sig)
         return fftconvolve(y, taps, mode='same')
     except:
-        logger.warning("滤波失败，返回原信号")
+        logger.warning("Filtering failed, returning original signal")
         return sig
 
-# === 自适应阈值峰检测 === #
+# === Adaptive threshold peak detection === #
 def first_strong_peak(corr, fs, min_delay_samples=500):
     half = corr.size//2
     pos = corr[half:]
     if pos.size <= min_delay_samples:
         return None, 0.0
-    pos[:min_delay_samples] = 0       # 去直达
+    pos[:min_delay_samples] = 0       # Remove direct wave
     
-    # 改进的SNR计算 - 使用GPU加速
-    # 使用前20%作为噪声基准
+    # Improved SNR calculation - uses GPU acceleration
+    # Use first 20% as noise baseline
     noise_samples = int(len(pos) * 0.2)
-    noise_floor = gpu_mean(pos[:noise_samples] ** 2)  # 噪声功率
+    noise_floor = gpu_mean(pos[:noise_samples] ** 2)  # Noise power
     
-    # 寻找峰值 - 使用GPU加速
+    # Find peak - uses GPU acceleration
     peak_idx = gpu_argmax(pos)
     peak_power = pos[peak_idx] ** 2
     
-    # 计算SNR (dB)
+    # Calculate SNR (dB)
     if noise_floor > 0:
         snr_db = 10 * np.log10(peak_power / noise_floor)
     else:
         snr_db = 0.0
     
-    # 检查是否为有效峰值
-    if snr_db < 6.0:  # 至少6dB的SNR
+    # Check if it's a valid peak
+    if snr_db < 6.0:  # At least 6dB SNR
         return None, 0.0
         
     return peak_idx, snr_db
 
-# === SNR计算和置信度评估 === #
+# === SNR Calculation and Confidence Assessment === #
 def calculate_band_confidence(snr, amplitude, band_idx):
-    """计算频段置信度
+    """Calculate frequency band confidence
     Args:
-        snr: 信噪比
-        amplitude: 峰值幅度
-        band_idx: 频段索引 (0, 1, 2)
+        snr: Signal-to-noise ratio
+        amplitude: Peak amplitude
+        band_idx: Band index (0, 1, 2)
     Returns:
-        confidence: 原始置信度 (0-1)，后续会归一化到总和100%
+        confidence: Raw confidence (0-1), will be normalized to sum 100% later
     """
-    # SNR权重 (SNR越高置信度越高)
-    snr_weight = min(snr / 10.0, 1.0)  # 归一化到0-1
+    # SNR weight (higher SNR means higher confidence)
+    snr_weight = min(snr / 10.0, 1.0)  # Normalized to 0-1
     
-    # 幅度权重 (幅度越大置信度越高)
-    amp_weight = min(amplitude / 0.1, 1.0)  # 归一化到0-1
+    # Amplitude weight (higher amplitude means higher confidence)
+    amp_weight = min(amplitude / 0.1, 1.0)  # Normalized to 0-1
     
-    # 频段权重 (中频段通常更稳定)
-    freq_weights = [0.8, 1.0, 0.9]  # 低频、中频、高频
+    # Frequency band weight (mid-frequency band is usually more stable)
+    freq_weights = [0.8, 1.0, 0.9]  # Low, mid, high frequency
     freq_weight = freq_weights[band_idx]
     
-    # 综合置信度
+    # Combined confidence
     confidence = (snr_weight * 0.5 + amp_weight * 0.3 + freq_weight * 0.2)
     return min(confidence, 1.0)
 
 def normalize_confidences(confidences):
-    """归一化置信度，确保总和为100%
+    """Normalize confidences to ensure sum equals 100%
     Args:
-        confidences: 各频段置信度列表
+        confidences: List of confidence values for each band
     Returns:
-        normalized_confidences: 归一化后的置信度，总和为100%
+        normalized_confidences: Normalized confidences summing to 100%
     """
     confidences = np.array(confidences)
     total = np.sum(confidences)
     
     if total > 0:
-        # 归一化到总和为100%
+        # Normalize to sum 100%
         normalized = (confidences / total) * 100.0
     else:
-        # 如果都为0，则平均分配
+        # If all are 0, distribute equally
         normalized = np.full_like(confidences, 100.0 / len(confidences))
     
     return normalized
 
-# === 简单 1-D Kalman === #
+# === Simple 1-D Kalman Filter === #
 class ScalarKalman:
-    def __init__(self, q=0.005, r=0.1):  # 调整参数以提高响应速度
+    def __init__(self, q=0.005, r=0.1):  # Adjust parameters to improve response speed
         self.x = None  # state
         self.p = 1.0   # covariance
         self.q = q     # process var
@@ -345,7 +367,7 @@ def gpu_sqrt(x):
 
 # ------------------------------------------------------------------ #
 class AudioIO:
-    """音频输入输出类 - 实现音频隔离，避免扬声器信号干扰麦克风"""
+    """Audio input/output class - implements audio isolation to avoid speaker signal interference with microphone"""
     def __init__(self):
         self.p = pyaudio.PyAudio()
         self.out = self.p.open(format=FORMAT, channels=CHANNELS,
@@ -353,175 +375,302 @@ class AudioIO:
         self.inp = self.p.open(format=FORMAT, channels=CHANNELS,
                                rate=FS, input=True,
                                frames_per_buffer=int(FS*LISTEN_LEN))
-        self.lock = Lock()
-        self.silence_buffer = np.zeros(int(FS * 0.01), dtype=np.int16)  # 10ms静音缓冲
+        self.silence_buffer = np.zeros(int(FS * 0.01), dtype=np.int16)  # 10ms silence buffer
     
     def play(self, pcm16):  
-        """播放音频，同时确保麦克风在播放期间不录音"""
-        with self.lock:
-            # 播放前添加短暂静音，确保系统稳定
+        """Play audio while ensuring microphone doesn't record during playback"""
+        try:
+            # Add brief silence before playback to ensure system stability
             self.out.write(self.silence_buffer.tobytes())
-            time.sleep(0.005)  # 5ms等待时间确保系统响应
+            time.sleep(0.005)  # 5ms wait time to ensure system response
             
-            # 播放主信号
+            # Play main signal
             self.out.write(pcm16.tobytes())
             
-            # 播放后添加静音缓冲，避免残响
+            # Add silence buffer after playback to avoid reverberation
             self.out.write(self.silence_buffer.tobytes())
-            time.sleep(0.005)  # 额外的5ms等待时间
+            time.sleep(0.005)  # Additional 5ms wait time
+        except Exception as e:
+            logger.error(f"Audio playback error: {e}")
     
     def record(self):
-        """录音，确保在播放完成后才开始录音"""
-        with self.lock:
-            # 额外的等待时间，确保播放完全结束
-            time.sleep(0.01)  # 10ms等待播放系统稳定
+        """Record audio, ensuring recording starts only after playback is complete"""
+        try:
+            # Additional wait time to ensure playback is completely finished
+            time.sleep(0.01)  # 10ms wait for playback system to stabilize
             
-            # 清空输入缓冲区，移除任何残留的播放信号
+            # Clear input buffer to remove any remaining playback signals
             try:
-                # 尝试读取并丢弃缓冲区中的旧数据
-                while True:
-                    self.inp.read(1024, exception_on_overflow=False)
+                # Try to read and discard old data in buffer
+                for _ in range(5):  # Limit attempts to avoid infinite loop
+                    try:
+                        self.inp.read(1024, exception_on_overflow=False)
+                    except:
+                        break  # Buffer is empty, this is normal
             except:
-                pass  # 缓冲区为空时会抛出异常，这是正常的
+                pass  # Exception when buffer is empty is normal
             
-            # 开始正式录音
-            raw = self.inp.read(int(FS*LISTEN_LEN),
-                                exception_on_overflow=False)
-        
-        sig = np.frombuffer(raw, np.int16).astype(np.float32)/2**15
-        return sig
+            # Start actual recording
+            raw = self.inp.read(int(FS*LISTEN_LEN), exception_on_overflow=False)
+            sig = np.frombuffer(raw, np.int16).astype(np.float32)/2**15
+            return sig
+        except Exception as e:
+            logger.error(f"Audio recording error: {e}")
+            # Return empty signal if recording fails
+            return np.zeros(int(FS*LISTEN_LEN), dtype=np.float32)
     
     def close(self):
-        self.out.stop_stream(); self.out.close()
-        self.inp.stop_stream(); self.inp.close()
-        self.p.terminate()
+        try:
+            self.out.stop_stream()
+            self.out.close()
+            self.inp.stop_stream() 
+            self.inp.close()
+            self.p.terminate()
+        except Exception as e:
+            logger.error(f"Audio close error: {e}")
 
 # ------------------------------------------------------------------ #
 class SonarWorker(QtCore.QThread):
-    distanceSig = QtCore.pyqtSignal(float, list, float)  # 距离 + SNR信息 + 置信度
+    distanceSig = QtCore.pyqtSignal(float, list, float)  # Distance + SNR info + confidence
     waveSig = QtCore.pyqtSignal(dict)
+    errorSig = QtCore.pyqtSignal(str)  # Signal for error reporting
+    heartbeatSig = QtCore.pyqtSignal()  # Signal for heartbeat monitoring
 
     def __init__(self):
         super().__init__()
         self.tx_pcm, self.chirps = generate_chirps()
         self.filters = design_filters()
         self.kf = ScalarKalman()
-        self.audio = AudioIO()
-        self.running = False
-        self.temperature = 20.0  # 默认温度20°C
-        # 移除了 self.rx_buffer
-        self.update_counter = 0  # 更新计数器
+        self.audio = None
         
-        # 预计算FFT频率轴（性能优化）
+        # Replace boolean flag with Event for thread-safe signaling
+        self.stop_event = Event()
+        self.paused_event = Event()
+        
+        self.temperature = 20.0  # Default temperature 20°C
+        self.update_counter = 0  # Update counter
+        self.executor = None
+        
+        # Heartbeat monitoring
+        self.heartbeat_counter = 0
+        self.last_heartbeat_time = time.time()
+        self.heartbeat_timer = None
+        
+        # Thread-safe queues
+        self.result_queue = queue.Queue(maxsize=10)  # Buffer for results
+          # Pre-compute FFT frequency axis (performance optimization)
         self.tx_freq = np.fft.rfftfreq(len(self.tx_pcm), 1/FS)
         
         if not CSV_PATH.exists():
             with CSV_PATH.open("w", newline='') as f:
-                csv.writer(f).writerow(["timestamp", "distance", "confidence", "band_snrs"])    
-    def run(self):
-        self.running = True
-        num_cores = os.cpu_count() # 获取CPU核心数
-        executor = ThreadPoolExecutor(max_workers=num_cores) # 使用所有核心
-        logger.info(f"SonarWorker started (optimized with full GPU acceleration), utilizing {num_cores} CPU cores.")
-        
-        while self.running:
-            t0 = time.perf_counter()
-            try:
-                # -------- 发射 ----------
-                self.audio.play(self.tx_pcm)
-                
-                # -------- 延时确保音频隔离 ----------
-                time.sleep(CHIRP_LEN + 0.02)  # 等待发射完成 + 20ms缓冲
-                
-                # -------- 接收 ----------
-                rx = self.audio.record()
-
-                # -------- 并行滤波+相关（使用GPU加速）----------
-                futs = [executor.submit(self._process_band_gpu, rx, chirp, filt, i)
-                        for i, (chirp, filt) in enumerate(zip(self.chirps, self.filters))]
-                results = [f.result() for f in futs]
-                  # -------- 多频融合处理（新的置信度算法）----------
-                valid_results = [(dist, conf, snr) for dist, conf, snr in results if dist is not None]
-                
-                if valid_results:
-                    distances, raw_confidences, snrs = zip(*valid_results)
-                    
-                    # 归一化置信度，确保总和为100%
-                    normalized_confidences = normalize_confidences(raw_confidences)
-                    
-                    # 使用归一化置信度作为权重进行加权平均
-                    weights = normalized_confidences + 1e-9  # 避免除零
-                    weighted_dist = np.average(distances, weights=weights)
-                    
-                    # Kalman滤波
-                    dist_kf = self.kf.update(weighted_dist)
-                    
-                    # 发送信号（置信度已归一化为百分比）
-                    self.distanceSig.emit(dist_kf, list(normalized_confidences), np.mean(normalized_confidences))
-                    
-                    # 记录到CSV
-                    with CSV_PATH.open("a", newline='') as f:
-                        csv.writer(f).writerow([time.time(), dist_kf, np.mean(normalized_confidences), normalized_confidences.tolist()])
-                # -------- 减少绘图频率以提高性能 ----------
-                self.update_counter += 1
-                if self.update_counter % PLOT_UPDATE_INTERVAL == 0:
-                    # 发信号给 GUI (降低频率)
-                    band_signals = []
-                    correlations = []
-                    
-                    # 计算各频段滤波后的信号和自相关（使用GPU加速）
-                    for i, (chirp, filt) in enumerate(zip(self.chirps, self.filters)):
-                        band_y = bandpass(rx, filt)  # 已内置GPU加速
-                        band_signals.append(band_y)
-                        # 使用GPU加速的相关计算
-                        corr = gpu_correlate(band_y, chirp)
-                        correlations.append(corr)
-                    
-                    self.waveSig.emit({
-                        'rx': rx,
-                        'band_signals': band_signals,
-                        'correlations': correlations,
-                        'update_spectrum': (self.update_counter % SPECTRUM_UPDATE_INTERVAL == 0)
-                    })
-
-            except Exception:
-                logger.exception("worker loop error")
-            # -------- 节拍 ----------
-            time.sleep(max(0, CYCLE - (time.perf_counter()-t0)))
-            
-        executor.shutdown(wait=False)
-        self.audio.close()
-        logger.info("SonarWorker stopped")    
+                csv.writer(f).writerow(["timestamp", "distance", "confidence", "band_snrs"])
     
-    def _process_band_gpu(self, rx, chirp_sig, filt, band_idx):
-            
-        '''处理单个频段（GPU加速版本）'''
-        # 使用GPU加速的滤波
-        y = bandpass(rx, filt)  # 已内置GPU加速检查
+    def _send_heartbeat(self):
+        """Send heartbeat signal and reschedule next heartbeat"""
+        if self.stop_event.is_set():
+            return
         
-        # 使用GPU加速的相关计算
+        self.heartbeat_counter += 1
+        self.heartbeatSig.emit()
+        
+        # Reschedule next heartbeat
+        if not self.stop_event.is_set():
+            self.heartbeat_timer = Timer(HEARTBEAT_INTERVAL, self._send_heartbeat)
+            self.heartbeat_timer.daemon = True
+            self.heartbeat_timer.start()
+    
+    def run(self):
+        # Use event instead of boolean flag
+        self.stop_event.clear()
+        self.paused_event.clear()
+        
+        try:
+            # Initialize audio after thread starts
+            self.audio = AudioIO()
+            
+            num_cores = min(4, os.cpu_count() or 1)  # Limit to 4 cores to avoid overhead, default to 1 if cpu_count returns None
+            self.executor = ThreadPoolExecutor(max_workers=num_cores)
+            logger.info(f"SonarWorker started with full GPU acceleration, utilizing {num_cores} CPU cores.")
+            
+            # Start heartbeat monitoring
+            self._send_heartbeat()
+            
+            while not self.stop_event.is_set():
+                if self.paused_event.is_set():
+                    # If paused, wait on the event with timeout to allow for stopping
+                    self.paused_event.wait(timeout=0.1)
+                    continue
+                
+                t0 = time.perf_counter()
+                try:
+                    # -------- Transmit ----------
+                    self.audio.play(self.tx_pcm)
+                    
+                    # -------- Delay to ensure audio isolation ----------
+                    # Use wait with timeout instead of sleep for safer interruption
+                    if self.stop_event.wait(timeout=CHIRP_LEN + 0.02):  # Returns True if event is set
+                        break
+                    
+                    # -------- Receive ----------
+                    rx = self.audio.record()
+                    
+                    if len(rx) == 0:  # Check if recording failed
+                        logger.warning("Empty recording received, skipping this cycle")
+                        continue
+
+                    # -------- Parallel filtering + correlation (using GPU acceleration) ----------
+                    if not self.stop_event.is_set() and self.executor:
+                        # Use timeout for futures to avoid hanging
+                        futs = [self.executor.submit(self._process_band_gpu, rx, chirp, filt, i)
+                                for i, (chirp, filt) in enumerate(zip(self.chirps, self.filters))]
+                        
+                        # Collect results with timeout
+                        results = []
+                        for fut in futs:
+                            if self.stop_event.is_set():
+                                break
+                            try:
+                                result = fut.result(timeout=LOCK_TIMEOUT)
+                                results.append(result)
+                            except TimeoutError:
+                                logger.warning("Processing band timed out, skipping")
+                        
+                        if self.stop_event.is_set():
+                            break
+                        
+                        # -------- Multi-frequency fusion processing (new confidence algorithm) ----------
+                        valid_results = [(dist, conf, snr) for dist, conf, snr in results if dist is not None]
+                        
+                        if valid_results:
+                            distances, raw_confidences, snrs = zip(*valid_results)
+                            
+                            # Normalize confidence to ensure sum equals 100%
+                            normalized_confidences = normalize_confidences(raw_confidences)
+                            
+                            # Use normalized confidence as weights for weighted average
+                            weights = normalized_confidences + 1e-9  # Avoid division by zero
+                            weighted_dist = np.average(distances, weights=weights)
+                            
+                            # Kalman filtering
+                            dist_kf = self.kf.update(weighted_dist)
+                            
+                            # Send signal (confidence already normalized to percentage)
+                            if not self.stop_event.is_set():
+                                try:
+                                    # Use non-blocking put with timeout to the result queue
+                                    if self.result_queue.full():
+                                        # Remove oldest item if queue is full
+                                        try:
+                                            self.result_queue.get_nowait()
+                                        except queue.Empty:
+                                            pass
+                                    self.result_queue.put((dist_kf, list(normalized_confidences), np.mean(normalized_confidences)), 
+                                                          timeout=QUEUE_TIMEOUT)
+                                    # Still emit signal for immediate UI updates
+                                    self.distanceSig.emit(dist_kf, list(normalized_confidences), np.mean(normalized_confidences))
+                                except queue.Full:
+                                    logger.warning("Result queue full, dropping measurement")
+                            
+                            # Log to CSV
+                            try:
+                                with CSV_PATH.open("a", newline='') as f:
+                                    csv.writer(f).writerow([time.time(), dist_kf, np.mean(normalized_confidences), normalized_confidences.tolist()])
+                            except Exception as e:
+                                logger.error(f"CSV writing error: {e}")
+                        
+                        # -------- Reduce plotting frequency to improve performance ----------
+                        self.update_counter += 1
+                        if not self.stop_event.is_set() and self.update_counter % PLOT_UPDATE_INTERVAL == 0:
+                            # Send signal to GUI (reduced frequency)
+                            band_signals = []
+                            correlations = []
+                            
+                            # Calculate band-filtered signals and cross-correlation (using GPU acceleration)
+                            for i, (chirp, filt) in enumerate(zip(self.chirps, self.filters)):
+                                band_y = bandpass(rx, filt)  # Built-in GPU acceleration
+                                band_signals.append(band_y)
+                                # Use GPU-accelerated correlation calculation
+                                corr = gpu_correlate(band_y, chirp)
+                                correlations.append(corr)
+                            
+                            if not self.stop_event.is_set():
+                                self.waveSig.emit({
+                                    'rx': rx,
+                                    'band_signals': band_signals,
+                                    'correlations': correlations,
+                                    'update_spectrum': (self.update_counter % SPECTRUM_UPDATE_INTERVAL == 0)
+                                })
+
+                except Exception as e:
+                    if not self.stop_event.is_set():  # Only log if we're still supposed to be running
+                        logger.exception(f"Worker loop error: {e}")
+                        self.errorSig.emit(f"Error in sonar processing: {str(e)}")
+                
+                # -------- Timing control ----------
+                if not self.stop_event.is_set():
+                    elapsed = time.perf_counter() - t0
+                    sleep_time = max(0, CYCLE - elapsed)
+                    if sleep_time > 0:
+                        # Use wait with timeout instead of sleep for safer interruption
+                        self.stop_event.wait(timeout=sleep_time)
+                        
+        except Exception as e:
+            logger.exception(f"Fatal error in SonarWorker: {e}")
+            self.errorSig.emit(f"Fatal error: {str(e)}")
+        finally:
+            # Cleanup
+            if self.heartbeat_timer:
+                self.heartbeat_timer.cancel()
+                self.heartbeat_timer = None
+                
+            if self.executor:
+                self.executor.shutdown(wait=False)
+                self.executor = None
+                
+            if self.audio:
+                self.audio.close()
+                self.audio = None
+                
+            logger.info("SonarWorker stopped")
+    def _process_band_gpu(self, rx, chirp_sig, filt, band_idx):
+        """Process single frequency band (GPU accelerated version)"""
+        # Use GPU-accelerated filtering
+        y = bandpass(rx, filt)  # Built-in GPU acceleration check
+        
+        # Use GPU-accelerated correlation calculation
         corr = gpu_correlate(y, chirp_sig)
         delay, snr = first_strong_peak(corr, FS)
         
         if delay is None:
             return None, 0.0, 0.0
             
-        # 计算距离
+        # Calculate distance
         sound_speed = calculate_sound_speed(self.temperature)
         distance = (delay/FS)*sound_speed/2
-        
-        # 计算置信度
+          # Calculate confidence
         peak_amplitude = np.max(np.abs(corr))
         confidence = calculate_band_confidence(snr, peak_amplitude, band_idx)
         
         return distance, confidence, snr
-
+        
     def _process_band(self, rx, chirp_sig, filt, band_idx):
-        """处理单个频段（兼容版本）"""
+        """Process single frequency band (compatibility version)"""
         return self._process_band_gpu(rx, chirp_sig, filt, band_idx)
-
+        
     def stop(self):
-        self.running = False
+        """Stop worker thread safely"""
+        logger.info("Stopping SonarWorker...")
+        self.stop_event.set()
+        
+    def pause(self):
+        """Pause worker without stopping"""
+        logger.info("Pausing SonarWorker...")
+        self.paused_event.set()
+        
+    def resume(self):
+        """Resume paused worker"""
+        logger.info("Resuming SonarWorker...")
+        self.paused_event.clear()
 
 # ------------------------------------------------------------------ #
 class MplCanvas(FigureCanvas):
@@ -547,10 +696,10 @@ class MplCanvas(FigureCanvas):
         self.ax.clear()
         return self.ax
 
-class MainWindow(QtWidgets.QMainWindow):
+class MainWindow(QtWidgets.QMainWindow):    
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("实时空气声纳系统 (优化版)")
+        self.setWindowTitle("Real-time Air Sonar System (Optimized)")
         self.setStyleSheet("""
             QMainWindow {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -588,8 +737,8 @@ class MainWindow(QtWidgets.QMainWindow):
             }
         """)
         
-        # -------- 控件 --------
-        self.label = QtWidgets.QLabel("距离: -- m")
+        # -------- Controls --------
+        self.label = QtWidgets.QLabel("Distance: -- m")
         self.label.setStyleSheet("""
             font-size: 28pt; 
             color: #2c3e50; 
@@ -601,8 +750,8 @@ class MainWindow(QtWidgets.QMainWindow):
             padding: 15px;
         """)
         
-        # 置信度显示
-        self.confidence_label = QtWidgets.QLabel("置信度: --")
+        # Confidence display
+        self.confidence_label = QtWidgets.QLabel("Confidence: --")
         self.confidence_label.setStyleSheet("""
             font-size: 16pt; 
             color: #27ae60; 
@@ -613,8 +762,8 @@ class MainWindow(QtWidgets.QMainWindow):
             padding: 8px;
         """)
         
-        # 温度控制
-        self.temp_label = QtWidgets.QLabel("环境温度 (°C):")
+        # Temperature control
+        self.temp_label = QtWidgets.QLabel("Temperature (°C):")
         self.temp_label.setStyleSheet("font-size: 14pt; color: #34495e; font-weight: bold;")
         self.temp_spinbox = QtWidgets.QSpinBox()
         self.temp_spinbox.setRange(-40, 60)
@@ -622,8 +771,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.temp_spinbox.setSuffix(" °C")
         self.temp_spinbox.valueChanged.connect(self.on_temp_changed)
         
-        self.btnStart = QtWidgets.QPushButton("开始测量")
-        self.btnStop = QtWidgets.QPushButton("停止测量")
+        self.btnStart = QtWidgets.QPushButton("Start")
+        self.btnStop = QtWidgets.QPushButton("Stop")
         self.btnStop.setEnabled(False)
         self.btnStop.setStyleSheet("""
             QPushButton {
@@ -634,22 +783,25 @@ class MainWindow(QtWidgets.QMainWindow):
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                     stop:0 #f66356, stop:1 #e34f4f);
             }
-        """)          # 波形 & 频谱 - 修改为新的布局，调整尺寸以减少卡顿
-        self.txSpec = MplCanvas("发射信号频谱分析", width=6, height=4)
-        self.rxSpec = MplCanvas("接收信号原始频谱", width=6, height=4)
+        """)
         
-        # 三个自相关图 - 减小尺寸提高性能
+        # Waveform & spectrum - modified for new layout, adjusted size to reduce stuttering
+        self.txSpec = MplCanvas("Transmit Signal Spectrum Analysis", width=6, height=4)
+        self.rxSpec = MplCanvas("Received Signal Raw Spectrum", width=6, height=4)
+        
+        # Three cross-correlation plots - reduced size for better performance
         self.corrPlots = [
-            MplCanvas(f"频段{i+1}自相关 ({BANDS[i][0]}-{BANDS[i][1]}Hz)", width=5, height=3) 
+            MplCanvas(f"Band {i+1} Cross-correlation ({BANDS[i][0]}-{BANDS[i][1]}Hz)", width=5, height=3) 
             for i in range(3)
         ]
         
-        # 三个频段的频谱图（不是时域信号） - 减小尺寸提高性能
+        # Three band spectrum plots (not time domain signals) - reduced size for better performance
         self.bandSpecPlots = [
-            MplCanvas(f"频段{i+1}滤波频谱 ({BANDS[i][0]}-{BANDS[i][1]}Hz)", width=5, height=3) 
+            MplCanvas(f"Band {i+1} Filtered Spectrum ({BANDS[i][0]}-{BANDS[i][1]}Hz)", width=5, height=3) 
             for i in range(3)
-        ]  
-        self.hist = MplCanvas("距离历史曲线", width=16, height=3.5)
+        ]
+        self.hist = MplCanvas("Distance History Curve", width=16, height=3.5)
+        #self.hist = MplCanvas("距离历史曲线", width=16, height=3.5)
         
         # 为图表添加边框样式
         chart_style = """
@@ -716,84 +868,82 @@ class MainWindow(QtWidgets.QMainWindow):
         central.setLayout(vbox)
         self.setCentralWidget(central)
         
-        # -------- 信号 --------
+        # -------- Signals --------
         self.btnStart.clicked.connect(self.start)
         self.btnStop.clicked.connect(self.stop)
         self.dist_hist = []
         self.time_hist = []
         self.confidence_hist = []
         self.start_time = None
-        self.worker = None        # 性能优化：减少重绘并添加绘图缓存
+        self.worker = None
+        # Performance optimization: reduce redraw and add plot caching
         self.last_update_time = 0
-        self.min_update_interval = 1.0 / GUI_UPDATE_RATE  # 基于GUI_UPDATE_RATE计算更新间隔
-        self.plot_cache = {}  # 绘图缓存
-        self.spectrum_cache_timeout = 0.2  # 频谱缓存超时时间(秒)
-
+        self.min_update_interval = 1.0 / GUI_UPDATE_RATE  # Update interval based on GUI_UPDATE_RATE
+        self.plot_cache = {}  # Plot cache
+        self.spectrum_cache_timeout = 0.2  # Spectrum cache timeout (seconds)
+    
     def on_temp_changed(self, value):
-        """温度改变时更新worker的温度值"""
+        """Update worker's temperature value when temperature changes"""
         if self.worker:
-            self.worker.temperature = float(value)    # --- worker 信号槽 ---
-    @QtCore.pyqtSlot(float, list, float)
+            self.worker.temperature = float(value)    # --- worker signal slots ---    @QtCore.pyqtSlot(float, list, float)
     def _on_dist(self, d, snrs, confidence):
         current_time = time.time()
         
-        # 性能优化：限制更新频率
+        # Performance optimization: limit update frequency
         if current_time - self.last_update_time < self.min_update_interval:
             return
+        
         self.last_update_time = current_time
         
         if self.start_time is None:
             self.start_time = current_time
         
         elapsed_time = current_time - self.start_time
+        # Update display
+        self.label.setText(f"Distance: {d:6.2f} m")
+        self.confidence_label.setText(f"Confidence: {confidence:.1f}% | SNR: {snrs}")
         
-        # 更新显示
-        self.label.setText(f"距离: {d:6.2f} m")
-        self.confidence_label.setText(f"置信度: {confidence:.1f}% | SNR: {snrs}")
-        
-        # 添加到历史数据
-        self.dist_hist.append(d)
+        # Add to history data        self.dist_hist.append(d)
         self.time_hist.append(elapsed_time)
         self.confidence_hist.append(confidence)
         
-        # 限制历史数据长度（性能优化）
+        # Limit history data length (performance optimization)
         if len(self.dist_hist) > MAX_HIST_POINTS:
             self.dist_hist = self.dist_hist[-MAX_HIST_POINTS:]
             self.time_hist = self.time_hist[-MAX_HIST_POINTS:]
             self.confidence_hist = self.confidence_hist[-MAX_HIST_POINTS:]
         
-        # 绘制距离历史曲线 - 改善视觉效果
+        # Draw distance history curve - improved visuals
         self.hist.ax.clear()
         self.hist.ax.grid(True, alpha=0.4, linewidth=0.8)
-        self.hist.ax.set_title("距离历史曲线 (置信度加权)", fontsize=16, fontweight='bold', pad=15)
+        self.hist.ax.set_title("Distance History (Confidence Weighted)", fontsize=16, fontweight='bold', pad=15)
         
         if len(self.time_hist) > 1:
-            # 根据置信度设置颜色
+            # Set colors based on confidence
             colors = ['#e74c3c' if c < 30 else '#f39c12' if c < 70 else '#27ae60' 
                      for c in self.confidence_hist]
             
-            # 绘制主曲线
+            # Draw main curve
             self.hist.ax.plot(self.time_hist, self.dist_hist, '-', 
                              color='#3498db', linewidth=2, alpha=0.8)
             
-            # 根据置信度绘制散点
+            # Draw scatter points based on confidence
             self.hist.ax.scatter(self.time_hist, self.dist_hist, 
                                c=colors, s=30, alpha=0.8, edgecolors='white', linewidth=1)
             
-            # 添加填充区域
+            # Add fill area
             self.hist.ax.fill_between(self.time_hist, self.dist_hist, alpha=0.15, color='#3498db')
             
-            # 根据置信度绘制散点
+            # Draw scatter points based on confidence (redundant in original code, kept for compatibility)
             self.hist.ax.scatter(self.time_hist, self.dist_hist, 
                                c=colors, s=30, alpha=0.8, edgecolors='white', linewidth=1)
-            
-            # 添加填充区域
+              # Add fill area (redundant in original code, kept for compatibility)
             self.hist.ax.fill_between(self.time_hist, self.dist_hist, alpha=0.15, color='#3498db')
         
-        self.hist.ax.set_xlabel("时间 (s)", fontsize=14, fontweight='bold')
-        self.hist.ax.set_ylabel("距离 (m)", fontsize=14, fontweight='bold')
+        self.hist.ax.set_xlabel("Time (s)", fontsize=14, fontweight='bold')
+        self.hist.ax.set_ylabel("Distance (m)", fontsize=14, fontweight='bold')
         self.hist.ax.tick_params(labelsize=12)
-        self.hist.ax.set_xlim(max(0, elapsed_time-60), elapsed_time+2)  # 显示最近60秒
+        self.hist.ax.set_xlim(max(0, elapsed_time-60), elapsed_time+2)  # Show last 60 seconds
         
         if self.dist_hist:
             y_range = max(self.dist_hist) - min(self.dist_hist)
@@ -801,7 +951,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.hist.ax.set_ylim(min(self.dist_hist)-y_range*0.15, 
                                      max(self.dist_hist)+y_range*0.15)
         
-        # 美化坐标轴
+        # Enhance coordinate axes
         self.hist.ax.spines['top'].set_visible(False)
         self.hist.ax.spines['right'].set_visible(False)
         self.hist.ax.spines['left'].set_linewidth(2)
@@ -816,87 +966,80 @@ class MainWindow(QtWidgets.QMainWindow):
             band_signals = data.get('band_signals', [])
             correlations = data.get('correlations', [])
             update_spectrum = data.get('update_spectrum', True)
-            
-            # 定义颜色
+              # Define colors
             colors = ['#e74c3c', '#f39c12', '#9b59b6']
             
-            # 性能优化：数据抽取（每PLOT_DECIMATION个点取一个）
+            # Performance optimization: data subsampling (take one point every PLOT_DECIMATION points)
             if len(rx) > 1000 and PLOT_DECIMATION > 1:
                 rx_decimated = rx[::PLOT_DECIMATION]
             else:
                 rx_decimated = rx
-            
-            # 发射信号频谱（使用缓存和抽取）
+              # Transmit signal spectrum (using cache and subsampling)
             if update_spectrum and hasattr(self, 'worker') and self.worker:
                 cache_key = 'tx_spectrum'
                 if (cache_key not in self.plot_cache or 
                     current_time - self.plot_cache[cache_key]['timestamp'] > self.spectrum_cache_timeout):
                     
-                    tx_mixed = self.worker.tx_pcm / 32768.0  # 归一化
-                    # 数据抽取
+                    tx_mixed = self.worker.tx_pcm / 32768.0  # Normalize
+                    # Data subsampling
                     if len(tx_mixed) > 1000 and PLOT_DECIMATION > 1:
                         tx_mixed = tx_mixed[::PLOT_DECIMATION]
                     
                     f_tx = np.fft.rfftfreq(len(tx_mixed), PLOT_DECIMATION/FS)
                     spec_tx = mag2db(np.fft.rfft(tx_mixed))
                     
-                    # 缓存结果
+                    # Cache results
                     self.plot_cache[cache_key] = {
                         'timestamp': current_time,
                         'f_tx': f_tx,
                         'spec_tx': spec_tx
                     }
                 
-                # 使用缓存数据
+                # Use cached data
                 cached_data = self.plot_cache[cache_key]
                 
                 self.txSpec.ax.clear()
-                self.txSpec.ax.plot(cached_data['f_tx']/1000, cached_data['spec_tx'], 
-                                  color='#27ae60', linewidth=2.0, alpha=0.9)  # 减小线宽
-                self.txSpec.ax.grid(True, alpha=0.3, linewidth=0.5)  # 减小网格线宽
-                self.txSpec.ax.set_xlabel("频率 (kHz)", fontsize=10, fontweight='bold')  # 减小字体
-                self.txSpec.ax.set_ylabel("幅度 (dB)", fontsize=10, fontweight='bold')
-                self.txSpec.ax.set_title("发射信号频谱", fontsize=12, fontweight='bold', pad=10)
-                self.txSpec.ax.tick_params(labelsize=9)
-                # 高亮频带区域
+                self.txSpec.ax.plot(cached_data['f_tx']/1000, cached_data['spec_tx'],                                  color='#27ae60', linewidth=2.0, alpha=0.9)  # Reduce line width
+                self.txSpec.ax.grid(True, alpha=0.3, linewidth=0.5)  # Reduce grid line width
+                self.txSpec.ax.set_xlabel("Frequency (kHz)", fontsize=10, fontweight='bold')  # Reduce font size
+                self.txSpec.ax.set_ylabel("Amplitude (dB)", fontsize=10, fontweight='bold')
+                self.txSpec.ax.set_title("Transmit Signal Spectrum", fontsize=12, fontweight='bold', pad=10)
+                self.txSpec.ax.tick_params(labelsize=9)                # Highlight frequency band regions
                 for low, high in BANDS:
                     self.txSpec.ax.axvspan(low/1000, high/1000, alpha=0.12, color='#27ae60')
-                # 美化坐标轴
+                # Enhance coordinate axes
                 self.txSpec.ax.spines['top'].set_visible(False)
                 self.txSpec.ax.spines['right'].set_visible(False)
-                self.txSpec.ax.spines['left'].set_linewidth(1.0)  # 减小边框线宽
-                self.txSpec.ax.spines['bottom'].set_linewidth(1.0)
+                self.txSpec.ax.spines['left'].set_linewidth(1.0)  # Reduce border line width                self.txSpec.ax.spines['bottom'].set_linewidth(1.0)
                 self.txSpec.draw()                
-                # ---- Rx 原始频谱 ----
+                # ---- Rx original spectrum ----
                 f_rx = np.fft.rfftfreq(rx_decimated.size, PLOT_DECIMATION/FS)
                 spec_rx = mag2db(np.fft.rfft(rx_decimated))
                 self.rxSpec.ax.clear()
                 self.rxSpec.ax.plot(f_rx/1000, spec_rx, color='#c0392b', linewidth=2.0, alpha=0.8)
-                self.rxSpec.ax.grid(True, alpha=0.3, linewidth=0.5)  # 减小网格线宽
-                self.rxSpec.ax.set_xlabel("频率 (kHz)", fontsize=10, fontweight='bold')
-                self.rxSpec.ax.set_ylabel("幅度 (dB)", fontsize=10, fontweight='bold')
-                self.rxSpec.ax.set_title("接收信号原始频谱", fontsize=12, fontweight='bold', pad=10)
-                self.rxSpec.ax.tick_params(labelsize=9)
-                # 高亮频带区域
+                self.rxSpec.ax.grid(True, alpha=0.3, linewidth=0.5)  # Reduce grid line width
+                self.rxSpec.ax.set_xlabel("Frequency (kHz)", fontsize=10, fontweight='bold')
+                self.rxSpec.ax.set_ylabel("Amplitude (dB)", fontsize=10, fontweight='bold')
+                self.rxSpec.ax.set_title("Received Signal Raw Spectrum", fontsize=12, fontweight='bold', pad=10)
+                self.rxSpec.ax.tick_params(labelsize=9)                # Highlight frequency band regions
                 for low, high in BANDS:
                     self.rxSpec.ax.axvspan(low/1000, high/1000, alpha=0.12, color='#c0392b')
-                # 美化坐标轴
+                # Enhance coordinate axes
                 self.rxSpec.ax.spines['top'].set_visible(False)
                 self.rxSpec.ax.spines['right'].set_visible(False)
                 self.rxSpec.ax.spines['left'].set_linewidth(1.0)
                 self.rxSpec.ax.spines['bottom'].set_linewidth(1.0)
-                self.rxSpec.draw()              # ---- 三个独立的自相关函数图 ----
-            if correlations:
+                self.rxSpec.draw()              # ---- 三个独立的自相关函数图 ----            if correlations:
                 colors = ['#e74c3c', '#f39c12', '#9b59b6']
-                for i, corr in enumerate(correlations[:3]):  # 最多3个频段
+                for i, corr in enumerate(correlations[:3]):  # Maximum 3 bands
                     if len(corr) > 0:
-                        # 数据抽取以提高性能
+                        # Subsample data for better performance
                         if len(corr) > 2000 and PLOT_DECIMATION > 1:
                             corr_decimated = corr[::PLOT_DECIMATION]
                         else:
                             corr_decimated = corr
                         
-                        # 时间轴（以毫秒为单位）
+                        # Time axis (in milliseconds)
                         len_chirp_samples = int(FS * CHIRP_LEN)
                         lag_indices = np.arange(len(corr_decimated))
                         time_axis_samples = lag_indices * PLOT_DECIMATION - (len_chirp_samples - 1)
@@ -906,10 +1049,9 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.corrPlots[i].ax.plot(time_axis, corr_decimated, 
                                                 color=colors[i % len(colors)], 
                                                 linewidth=1.5, alpha=0.9)  # 减小线宽
-                        self.corrPlots[i].ax.grid(True, alpha=0.3, linewidth=0.5)  # 减小网格线宽
-                        self.corrPlots[i].ax.set_xlabel("时间延迟 (ms)", fontsize=9, fontweight='bold')
-                        self.corrPlots[i].ax.set_ylabel("相关系数", fontsize=9, fontweight='bold')
-                        self.corrPlots[i].ax.set_title(f"频段{i+1}自相关 ({BANDS[i][0]}-{BANDS[i][1]}Hz)", 
+                        self.corrPlots[i].ax.grid(True, alpha=0.3, linewidth=0.5)  # 减小网格线宽                        self.corrPlots[i].ax.set_xlabel("Time Delay (ms)", fontsize=9, fontweight='bold')
+                        self.corrPlots[i].ax.set_ylabel("Correlation Coefficient", fontsize=9, fontweight='bold')
+                        self.corrPlots[i].ax.set_title(f"Band {i+1} Correlation ({BANDS[i][0]}-{BANDS[i][1]}Hz)", 
                                                      fontsize=10, fontweight='bold', pad=8)
                         self.corrPlots[i].ax.tick_params(labelsize=8)
                         # 美化坐标轴
@@ -918,29 +1060,25 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.corrPlots[i].ax.spines['left'].set_linewidth(1.0)
                         self.corrPlots[i].ax.spines['bottom'].set_linewidth(1.0)
                         self.corrPlots[i].draw()
-            
-            # ---- 各频段滤波信号的频谱图 ----
+            # ---- Frequency spectrum for each filtered band signal ----
             if band_signals:
-                for i, band_signal in enumerate(band_signals[:3]):  # 最多3个频段
-                    if len(band_signal) > 0:
-                        # 计算频谱
+                for i, band_signal in enumerate(band_signals[:3]):  # Maximum 3 bands
+                    if len(band_signal) > 0:                        # Calculate spectrum
                         f_band = np.fft.rfftfreq(len(band_signal), 1/FS)
                         spec_band = mag2db(np.fft.rfft(band_signal))
-                        
                         self.bandSpecPlots[i].ax.clear()
                         self.bandSpecPlots[i].ax.plot(f_band, spec_band, 
                                                     color=colors[i % len(colors)], 
                                                     linewidth=2.0, alpha=0.9)
                         self.bandSpecPlots[i].ax.grid(True, alpha=0.4, linewidth=0.8)
-                        self.bandSpecPlots[i].ax.set_xlabel("频率 (Hz)", fontsize=10, fontweight='bold')
-                        self.bandSpecPlots[i].ax.set_ylabel("幅度 (dB)", fontsize=10, fontweight='bold')
-                        self.bandSpecPlots[i].ax.set_title(f"频段{i+1}滤波频谱 ({BANDS[i][0]}-{BANDS[i][1]}Hz)", 
+                        self.bandSpecPlots[i].ax.set_xlabel("Frequency (Hz)", fontsize=10, fontweight='bold')
+                        self.bandSpecPlots[i].ax.set_ylabel("Amplitude (dB)", fontsize=10, fontweight='bold')
+                        self.bandSpecPlots[i].ax.set_title(f"Band {i+1} Filtered Spectrum ({BANDS[i][0]}-{BANDS[i][1]}Hz)", 
                                                          fontsize=12, fontweight='bold', pad=10)
-                        self.bandSpecPlots[i].ax.tick_params(labelsize=9)
-                        # 高亮对应频带区域
+                        self.bandSpecPlots[i].ax.tick_params(labelsize=9)                        # Highlight corresponding frequency band
                         low, high = BANDS[i]
                         self.bandSpecPlots[i].ax.axvspan(low, high, alpha=0.15, color=colors[i % len(colors)])
-                        # 美化坐标轴
+                        # Enhance coordinate axes
                         self.bandSpecPlots[i].ax.spines['top'].set_visible(False)
                         self.bandSpecPlots[i].ax.spines['right'].set_visible(False)
                         self.bandSpecPlots[i].ax.spines['left'].set_linewidth(1.5)
@@ -950,12 +1088,18 @@ class MainWindow(QtWidgets.QMainWindow):
             logger.error(f"Error in _on_wave: {e}")
             traceback.print_exc()
 
-    # --- 控制 ---
-    def start(self):
+    # --- 控制 ---    def start(self):
         self.worker = SonarWorker()
         self.worker.temperature = float(self.temp_spinbox.value())
         self.worker.distanceSig.connect(self._on_dist)
         self.worker.waveSig.connect(self._on_wave)
+        self.worker.errorSig.connect(self.showError)  # Connect error signal
+        self.worker.heartbeatSig.connect(self.onHeartbeat)  # Connect heartbeat
+        
+        # Start monitoring for missed heartbeats
+        self.last_heartbeat_time = time.time()
+        
+        # Start worker thread
         self.worker.start()
         self.btnStart.setEnabled(False)
         self.btnStop.setEnabled(True)
@@ -965,15 +1109,32 @@ class MainWindow(QtWidgets.QMainWindow):
         self.confidence_hist.clear()
 
     def stop(self):
-        if self.worker:
-            self.worker.stop()
-            self.worker.wait()
+        """Stop the worker thread safely"""
+        if hasattr(self, 'worker') and self.worker:
+            # Using the new Event-based stop mechanism
+            try:
+                self.worker.stop()
+                # Give worker thread time to exit gracefully
+                if not self.worker.wait(2000):  # 2 seconds timeout
+                    logger.warning("Worker thread didn't exit cleanly, forcing...")
+            except Exception as e:
+                logger.error(f"Error stopping worker thread: {e}")
             self.worker = None
         self.btnStart.setEnabled(True)
         self.btnStop.setEnabled(False)
         self.start_time = None
+    
+    def onHeartbeat(self):
+        """Receive heartbeat from worker thread"""
+        self.last_heartbeat_time = time.time()
+    
+    def showError(self, error_msg):
+        """Display error message from worker thread"""
+        logger.error(f"Worker thread error: {error_msg}")
+        # Could add GUI popup here if needed
 
     def closeEvent(self, e):
+        """Handle window close event"""
         self.stop()
         e.accept()
 

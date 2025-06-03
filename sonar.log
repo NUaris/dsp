@@ -3450,3 +3450,81 @@ ValueError: The length of `a` must be at least 2.
 2025-06-03 19:49:32,745 [INFO] SonarWorker started (optimized with full GPU acceleration), utilizing 18 CPU cores.
 2025-06-03 19:50:49,258 [INFO] === Air-Sonar optimized start ===
 2025-06-03 19:50:52,658 [INFO] SonarWorker started (optimized with full GPU acceleration), utilizing 18 CPU cores.
+2025-06-03 19:58:26,872 [INFO] === Air-Sonar optimized start ===
+2025-06-03 19:58:29,777 [INFO] SonarWorker started (optimized with full GPU acceleration), utilizing 18 CPU cores.
+2025-06-03 20:01:36,268 [INFO] === Air-Sonar optimized start ===
+2025-06-03 20:06:11,746 [INFO] === Air-Sonar optimized start ===
+2025-06-03 20:06:14,194 [INFO] SonarWorker started (optimized with full GPU acceleration), utilizing 18 CPU cores.
+2025-06-03 20:06:40,803 [INFO] === Air-Sonar optimized start ===
+2025-06-03 20:18:13,782 [INFO] === Air-Sonar optimized start ===
+2025-06-03 20:18:18,308 [INFO] SonarWorker started with full GPU acceleration, utilizing 4 CPU cores.
+2025-06-03 20:21:22,117 [INFO] === Air-Sonar optimized start ===
+2025-06-03 20:21:26,193 [INFO] SonarWorker started with full GPU acceleration, utilizing 4 CPU cores.
+2025-06-03 20:22:06,515 [INFO] SonarWorker stopped
+2025-06-03 20:31:37,689 [INFO] === Air-Sonar optimized start ===
+2025-06-03 20:31:40,064 [INFO] SonarWorker started with full GPU acceleration, utilizing 4 CPU cores.
+2025-06-03 20:34:23,311 [INFO] === Air-Sonar optimized start ===
+2025-06-03 20:34:28,317 [INFO] SonarWorker started with full GPU acceleration, utilizing 18 CPU cores.
+2025-06-03 20:34:51,655 [INFO] SonarWorker stopped
+2025-06-03 20:35:16,822 [INFO] SonarWorker started with full GPU acceleration, utilizing 18 CPU cores.
+2025-06-03 20:35:39,903 [INFO] SonarWorker stopped
+2025-06-03 21:03:39,630 [INFO] === Air-Sonar optimized start ===
+2025-06-03 21:03:40,081 [ERROR] Fatal error, exit
+Traceback (most recent call last):
+  File "F:\vscode\dsp\airSonar_optimized.py", line 1148, in <module>
+    main()
+  File "F:\vscode\dsp\airSonar_optimized.py", line 1141, in main
+    win = MainWindow()
+          ^^^^^^^^^^^^
+  File "F:\vscode\dsp\airSonar_optimized.py", line 768, in __init__
+    self.temp_spinbox.valueChanged.connect(self.on_temp_changed)
+                                           ^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'MainWindow' object has no attribute 'on_temp_changed'
+2025-06-03 21:33:23,922 [INFO] === Air-Sonar optimized start ===
+2025-06-03 21:33:24,446 [ERROR] Fatal error, exit
+Traceback (most recent call last):
+  File "F:\vscode\dsp\airSonar_optimized.py", line 1148, in <module>
+    main()
+  File "F:\vscode\dsp\airSonar_optimized.py", line 1141, in main
+    win = MainWindow()
+          ^^^^^^^^^^^^
+  File "F:\vscode\dsp\airSonar_optimized.py", line 868, in __init__
+    self.btnStart.clicked.connect(self.start)
+                                  ^^^^^^^^^^
+AttributeError: 'MainWindow' object has no attribute 'start'
+2025-06-03 21:34:09,638 [INFO] === Air-Sonar optimized start ===
+2025-06-03 21:34:10,033 [ERROR] Fatal error, exit
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 1148, in <module>
+    main()
+  File "f:\vscode\dsp\airSonar_optimized.py", line 1141, in main
+    win = MainWindow()
+          ^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 868, in __init__
+    self.btnStart.clicked.connect(self.start)
+                                  ^^^^^^^^^^
+AttributeError: 'MainWindow' object has no attribute 'start'
+2025-06-03 21:34:49,913 [INFO] === Air-Sonar optimized start ===
+2025-06-03 21:34:50,322 [ERROR] Fatal error, exit
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 1148, in <module>
+    main()
+  File "f:\vscode\dsp\airSonar_optimized.py", line 1141, in main
+    win = MainWindow()
+          ^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 868, in __init__
+    self.btnStart.clicked.connect(self.start)
+                                  ^^^^^^^^^^
+AttributeError: 'MainWindow' object has no attribute 'start'
+2025-06-03 21:35:53,657 [INFO] === Air-Sonar optimized start ===
+2025-06-03 21:35:54,084 [ERROR] Fatal error, exit
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 1152, in <module>
+    main()
+  File "f:\vscode\dsp\airSonar_optimized.py", line 1145, in main
+    win = MainWindow()
+          ^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 872, in __init__
+    self.btnStart.clicked.connect(self.start)
+                                  ^^^^^^^^^^
+AttributeError: 'MainWindow' object has no attribute 'start'
