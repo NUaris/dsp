@@ -3528,3 +3528,28 @@ Traceback (most recent call last):
     self.btnStart.clicked.connect(self.start)
                                   ^^^^^^^^^^
 AttributeError: 'MainWindow' object has no attribute 'start'
+2025-06-03 21:56:57,457 [INFO] === Air-Sonar optimized start ===
+2025-06-03 21:56:57,923 [ERROR] Fatal error, exit
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 1152, in <module>
+    main()
+  File "f:\vscode\dsp\airSonar_optimized.py", line 1145, in main
+    win = MainWindow()
+          ^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 872, in __init__
+    self.btnStart.clicked.connect(self.start)
+                                  ^^^^^^^^^^
+AttributeError: 'MainWindow' object has no attribute 'start'
+2025-06-03 21:59:45,472 [INFO] === Air-Sonar optimized start ===
+2025-06-03 21:59:48,456 [INFO] SonarWorker started with full GPU acceleration, utilizing 4 CPU cores.
+2025-06-03 22:00:07,591 [INFO] Stopping SonarWorker...
+2025-06-03 22:00:07,799 [INFO] SonarWorker stopped
+2025-06-03 22:01:45,584 [INFO] SonarWorker started with full GPU acceleration, utilizing 4 CPU cores.
+2025-06-03 22:01:57,819 [INFO] Stopping SonarWorker...
+2025-06-03 22:01:57,988 [INFO] SonarWorker stopped
+2025-06-03 22:32:26,472 [INFO] === Air-Sonar optimized start ===
+2025-06-03 22:32:31,877 [INFO] SonarWorker started with full GPU acceleration, utilizing 4 CPU cores.
+2025-06-03 22:43:29,782 [INFO] === Air-Sonar optimized start ===
+2025-06-03 22:43:40,293 [WARNING] Worker thread didn't exit cleanly, forcing...
+2025-06-03 22:43:53,352 [INFO] === Air-Sonar optimized start ===
+2025-06-03 22:44:07,512 [WARNING] Worker thread didn't exit cleanly, forcing...
