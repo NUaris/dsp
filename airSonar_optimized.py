@@ -22,7 +22,12 @@ from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 import numpy as np
-from scipy.signal import chirp, iirfilter, filtfilt, firwin, fftconvolve, correlate
+try:
+    import cupy as cp
+except ImportError:
+    cp = None
+from scipy.signal import chirp, iirfilter, filtfilt, firwin, fftconvolve, correlate, hilbert
+
 import pyaudio
 from PyQt5 import QtCore, QtWidgets, QtOpenGL
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
@@ -383,6 +388,146 @@ def gpu_sqrt(x):
     else:
         return np.sqrt(x)
 
+def gpu_hilbert(signal):
+    """GPU加速的希尔伯特变换"""
+    if GPU_AVAILABLE and cp is not None:
+        try:
+            signal_gpu = cp.asarray(signal, dtype=cp.complex64)
+            N = len(signal_gpu)
+            fft_signal = cp.fft.fft(signal_gpu)
+            h = cp.zeros(N, dtype=cp.complex64)
+            h[0] = 1
+            h[1:N//2] = 2
+            if N % 2 == 0:
+                h[N//2] = 1
+            else:
+                h[N//2] = 2
+            hilbert_fft = fft_signal * h
+            hilbert_result = cp.fft.ifft(hilbert_fft)
+            return cp.asnumpy(hilbert_result)
+        except Exception as e:
+            logger.warning(f"GPU Hilbert failed: {e}, falling back to CPU")
+            analytic = hilbert(signal)
+            if isinstance(analytic, tuple):
+                return analytic[0]
+            return analytic
+    else:
+        analytic = hilbert(signal)
+        if isinstance(analytic, tuple):
+            return analytic[0]
+        return analytic
+
+def gpu_envelope(signal):
+    # gpu accelerate envelope detection using Hilbert transform
+    analytic_signal = gpu_hilbert(signal)
+    return np.abs(np.asarray(analytic_signal))
+
+def gpu_instantaneous_phase(signal):
+    # gpu accelerate instantaneous phase calculation using Hilbert transform
+    analytic_signal = gpu_hilbert(signal)
+    return np.angle(np.asarray(analytic_signal))
+
+def gpu_envelope_detection(signal, method='hilbert', smooth_window=5):
+    """
+    Enhanced envelope detection function
+    
+    Args:
+        signal: Input signal
+        method: Detection method ('hilbert', 'peak', 'rms')
+        smooth_window: Smoothing window size
+    
+    Returns:
+        envelope: Envelope signal
+        peaks: Detected peak positions
+        quality: Signal quality score
+    """
+    try:
+        if method == 'hilbert':
+            envelope = gpu_envelope(signal)
+        elif method == 'peak':
+            envelope = np.abs(signal)
+            from scipy.signal import find_peaks
+            peaks, _ = find_peaks(envelope, distance=len(envelope)//20)
+            if len(peaks) > 1:
+                from scipy.interpolate import interp1d
+                f = interp1d(peaks, envelope[peaks], kind='cubic', bounds_error=False)
+                envelope = f(np.arange(len(envelope)))
+        elif method == 'rms':
+            window_size = max(1, len(signal) // 100)
+            envelope = np.array([
+                np.sqrt(np.mean(signal[max(0, i-window_size//2):min(len(signal), i+window_size//2)]**2))
+                for i in range(len(signal))
+            ])
+        else:
+            envelope = gpu_envelope(signal)
+        if smooth_window > 1:
+            from scipy.ndimage import uniform_filter1d
+            envelope = uniform_filter1d(envelope, size=smooth_window)
+        from scipy.signal import find_peaks
+        threshold = np.mean(envelope) + 2 * np.std(envelope)
+        peaks, properties = find_peaks(envelope, height=threshold, distance=len(envelope)//50, prominence=np.std(envelope))
+        quality = calculate_signal_quality(signal, envelope)
+        return envelope, peaks, quality
+    except Exception as e:
+        print(f"Enhanced envelope detection failed: {e}")
+        envelope = gpu_envelope(signal)
+        return envelope, np.array([]), 0.5
+
+def calculate_signal_quality(signal, envelope):
+    try:
+        signal_power = np.mean(signal**2)
+        noise_estimate = np.std(signal - np.mean(signal))
+        snr = 10 * np.log10(signal_power / (noise_estimate**2 + 1e-10))
+        envelope_smooth = np.std(np.diff(envelope)) / (np.std(envelope) + 1e-10)
+        dynamic_range = (np.max(envelope) - np.min(envelope)) / (np.mean(envelope) + 1e-10)
+        snr_score = np.clip(snr / 20.0, 0, 1)
+        smooth_score = np.clip(1.0 - envelope_smooth, 0, 1)
+        dynamic_score = np.clip(dynamic_range / 2.0, 0, 1)
+        quality = (snr_score * 0.5 + smooth_score * 0.3 + dynamic_score * 0.2)
+        return float(np.clip(quality, 0, 1))
+    except Exception:
+        return 0.5
+
+def adaptive_threshold_detection(signal, envelope, method='percentile'):
+    try:
+        if method == 'percentile':
+            threshold = np.percentile(envelope, 85)
+        elif method == 'otsu':
+            hist, bin_edges = np.histogram(envelope, bins=50)
+            bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+            max_variance = 0
+            optimal_threshold = np.mean(envelope)
+            for threshold in bin_centers:
+                w1 = np.sum(envelope <= threshold) / len(envelope)
+                w2 = 1 - w1
+                if w1 == 0 or w2 == 0:
+                    continue
+                mu1 = np.mean(envelope[envelope <= threshold])
+                mu2 = np.mean(envelope[envelope > threshold])
+                between_variance = w1 * w2 * (mu1 - mu2)**2
+                if between_variance > max_variance:
+                    max_variance = between_variance
+                    optimal_threshold = threshold
+            threshold = optimal_threshold
+        elif method == 'adaptive':
+            window_size = len(envelope) // 10
+            threshold = np.array([
+                np.mean(envelope[max(0, i-window_size//2):min(len(envelope), i+window_size//2)]) + 2 * np.std(envelope[max(0, i-window_size//2):min(len(envelope), i+window_size//2)])
+                for i in range(len(envelope))
+            ])
+        else:
+            threshold = np.mean(envelope) + 2 * np.std(envelope)
+        if isinstance(threshold, np.ndarray):
+            detected = envelope > threshold
+        else:
+            detected = envelope > threshold
+        return threshold, detected
+    except Exception as e:
+        print(f"Adaptive threshold detection failed: {e}")
+        threshold = np.mean(envelope) + np.std(envelope)
+        detected = envelope > threshold
+        return threshold, detected
+
 # ------------------------------------------------------------------ #
 class AudioIO:
     """Audio input/output class - implements audio isolation to avoid speaker signal interference with microphone"""
@@ -443,7 +588,7 @@ class AudioIO:
 
 # ------------------------------------------------------------------ #
 class SonarWorker(QtCore.QThread):
-    """Sonar后台线程，负责音频采集、DSP、数据融合与信号发射。"""
+    # sonar backend worker thread control signals
     distanceSig = QtCore.pyqtSignal(float, list, float)
     waveSig = QtCore.pyqtSignal(dict)
     errorSig = QtCore.pyqtSignal(str)
@@ -468,7 +613,7 @@ class SonarWorker(QtCore.QThread):
         if not cfg.CSV_PATH.exists():
             with cfg.CSV_PATH.open("w", newline='') as f:
                 csv.writer(f).writerow(["timestamp", "distance", "confidence", "band_snrs"])
-        # 优化：FIR taps一次性上传到GPU
+        
         if GPU_AVAILABLE and cp is not None:
             self.taps_gpu = [cp.asarray(t) for _, _, t in self.filters]
 
@@ -481,23 +626,50 @@ class SonarWorker(QtCore.QThread):
         self.heartbeat_timer.stop()
 
     def _process_band_gpu(self, rx, chirp_sig, filt, band_idx):
-        """Process single frequency band with GPU acceleration"""
+        """Process single frequency band with GPU acceleration and envelope detection"""
         try:
-            # GPU加速滤波
+       
             band_sig = bandpass(rx, filt)
-            # GPU加速相关
+            
+            
+            envelope, peaks, signal_quality = gpu_envelope_detection(band_sig, method='hilbert', smooth_window=3)
+            
+           
             corr = gpu_correlate(band_sig, chirp_sig)
-            # 相关峰值检测
+            
+ 
+            corr_envelope, corr_peaks, corr_quality = gpu_envelope_detection(corr, method='hilbert', smooth_window=5)
+            
+         
             min_delay_samples = int(cfg.FS * cfg.CHIRP_LEN * 1.2)
-            peak_idx, snr = first_strong_peak(corr, cfg.FS, min_delay_samples)
-            if peak_idx is None:
-                return None, 0.0, 0.0
-            # 距离估算
+          
+            valid_peaks = corr_peaks[corr_peaks >= min_delay_samples]
+            if len(valid_peaks) > 0:
+          
+                peak_idx = valid_peaks[np.argmax(corr_envelope[valid_peaks])]
+           
+                signal_power = corr_envelope[peak_idx]**2
+                noise_power = np.mean(corr_envelope[:min_delay_samples]**2) + 1e-10
+                snr = 10 * np.log10(signal_power / noise_power)
+            else:
+         
+                peak_idx, snr = first_strong_peak(corr, cfg.FS, min_delay_samples)
+                if peak_idx is None:
+                    return None, 0.0, 0.0
+            
+  
             delay = peak_idx - (len(chirp_sig) - 1)
             distance = delay / cfg.FS * calculate_sound_speed(self.temperature) / 2
+            
+ 
             amplitude = np.max(np.abs(corr))
-            confidence = calculate_band_confidence(snr, amplitude, band_idx)
-            return distance, confidence, snr
+            base_confidence = calculate_band_confidence(snr, amplitude, band_idx)
+            
+  
+            quality_factor = (signal_quality + corr_quality) / 2.0
+            enhanced_confidence = base_confidence * (0.5 + 0.5 * quality_factor)
+            
+            return distance, enhanced_confidence, snr
         except Exception as e:
             logger.exception(f"_process_band_gpu error: {e}")
             return None, 0.0, 0.0
@@ -515,27 +687,32 @@ class SonarWorker(QtCore.QThread):
                     gpu_name = f"Unknown ({e})"
                 logger.info(f"cupy version={cp.__version__}, device={gpu_name}")
                 with cp.cuda.Stream.null:
-                    cp.empty((1,))  # 触发初始化只需一次
+                    cp.empty((1,))  
             while not self.stop_event.is_set():
                 t0 = time.perf_counter()
                 self.audio.play(self.tx_pcm)
-                rx = self.audio.record()                # 初始化输出数组  
+                rx = self.audio.record()
+                
+
                 band_spectra = [None] * len(cfg.BANDS)
                 correlations = [None] * len(cfg.BANDS)
                 band_lengths = [0] * len(cfg.BANDS)  # Store band signal lengths
-                  # 计算每个频段的滤波信号、频谱和相关
+                
+            
                 def process_band_with_output(args):
                     i, chirp, filt = args
-                    # 滤波
+                    # filtering
                     band_sig = bandpass(rx, filt)
-                    # 频谱
+                    # detecting envelope
+                    envelope, peaks, signal_quality = gpu_envelope_detection(band_sig, method='hilbert', smooth_window=3)
+                    # spectrum calculation
                     band_spec = mag2db(np.fft.rfft(band_sig))
-                    # 相关
+                    # correlation
                     corr = gpu_correlate(band_sig, chirp)
-                    # 距离计算
+                    # calculate distance, confidence, snr
                     distance, confidence, snr = self._process_band_gpu(rx, chirp, filt, i)
                     return i, band_spec, corr, len(band_sig), (distance, confidence, snr)
-                  # 多线程并行三路band处理
+                  # Process each band in parallel
                 with ThreadPoolExecutor(max_workers=len(cfg.BANDS)) as pool:
                     futs = [pool.submit(process_band_with_output, (i, chirp, filt))
                             for i, (chirp, filt) in enumerate(zip(self.chirps, self.filters))]
@@ -551,7 +728,7 @@ class SonarWorker(QtCore.QThread):
                         except Exception as e:
                             logger.exception(e)
                 
-                # 距离融合
+                # fusion of results
                 if results:
                     distances, confidences, snrs = zip(*results)
                     confidences_norm = normalize_confidences(confidences)
@@ -591,7 +768,7 @@ class SonarWorker(QtCore.QThread):
 
 # ------------------------------------------------------------------ #
 class MplCanvas(FigureCanvas):
-    """Matplotlib画布，支持高性能绘图和blitting。"""
+    """Matplotlib canvas supporting high-performance plotting and blitting."""
     def __init__(self, title, parent=None, width=8, height=5.5, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi, tight_layout=True)
         fig.patch.set_facecolor('white')
@@ -604,27 +781,28 @@ class MplCanvas(FigureCanvas):
         self._main_line = None
         self._blit_bg = None
     def plot_line(self, x, y, color, **kwargs):
-        # 支持blitting的高性能绘图
+        # High-performance plotting with blitting support
         if self._main_line is None:
             self._main_line, = self.ax.plot(x, y, color=color, **kwargs)
             self._blit_bg = self.copy_from_bbox(self.ax.bbox)
         else:
             self._main_line.set_data(x, y)
+            # Autoscale axes
+            self.ax.relim()
+            self.ax.autoscale_view()
             if self._blit_bg is not None:
                 self.restore_region(self._blit_bg)
                 self.ax.draw_artist(self._main_line)
                 self.blit(self.ax.bbox)
             else:
                 self.draw()
-    def clear_and_plot(self, *args, **kwargs):
-        self.ax.clear()
-        self._main_line = None
-        self._blit_bg = None
-        return self.ax
+        # Always autoscale axes
+        self.ax.relim()
+        self.ax.autoscale_view()
 
 # ------------------------------------------------------------------ #
 class MainWindow(QtWidgets.QMainWindow):
-    """主窗口，负责GUI布局、信号连接和高性能绘图。"""
+    """Main window: GUI layout, signal connections, high-performance plotting."""
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Real-time Air Sonar System (Optimized)")
@@ -664,7 +842,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 background: white;
             }
         """)
-        
         # -------- Controls --------
         self.label = QtWidgets.QLabel("Distance: -- m")
         self.label.setStyleSheet("""
@@ -677,7 +854,6 @@ class MainWindow(QtWidgets.QMainWindow):
             border-radius: 15px;
             padding: 15px;
         """)
-        
         # Confidence display
         self.confidence_label = QtWidgets.QLabel("Confidence: --")
         self.confidence_label.setStyleSheet("""
@@ -689,7 +865,6 @@ class MainWindow(QtWidgets.QMainWindow):
             border-radius: 8px;
             padding: 8px;
         """)
-        
         # Temperature control
         self.temp_label = QtWidgets.QLabel("Temperature (°C):")
         self.temp_label.setStyleSheet("font-size: 14pt; color: #34495e; font-weight: bold;")
@@ -698,7 +873,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.temp_spinbox.setValue(20)
         self.temp_spinbox.setSuffix(" °C")
         self.temp_spinbox.valueChanged.connect(self.on_temp_changed)
-        
         self.btnStart = QtWidgets.QPushButton("Start")
         self.btnStop = QtWidgets.QPushButton("Stop")
         self.btnStop.setEnabled(False)
@@ -712,26 +886,21 @@ class MainWindow(QtWidgets.QMainWindow):
                     stop:0 #f66356, stop:1 #e34f4f);
             }
         """)
-        
         # Waveform & spectrum - modified for new layout, adjusted size to reduce stuttering
         self.txSpec = MplCanvas("Transmit Signal Spectrum Analysis", width=6, height=4)
         self.rxSpec = MplCanvas("Received Signal Raw Spectrum", width=6, height=4)
-        
         # Three cross-correlation plots - reduced size for better performance
         self.corrPlots = [
             MplCanvas(f"Band {i+1} Cross-correlation ({cfg.BANDS[i][0]}-{cfg.BANDS[i][1]}Hz)", width=5, height=3) 
             for i in range(3)
         ]
-        
         # Three band spectrum plots (not time domain signals) - reduced size for better performance
         self.bandSpecPlots = [
             MplCanvas(f"Band {i+1} Filtered Spectrum ({cfg.BANDS[i][0]}-{cfg.BANDS[i][1]}Hz)", width=5, height=3) 
             for i in range(3)
         ]
         self.hist = MplCanvas("Distance History Curve", width=16, height=3.5)
-        #self.hist = MplCanvas("距离历史曲线", width=16, height=3.5)
-        
-        # 为图表添加边框样式
+        # Add border style to charts
         chart_style = """
             border: 2px solid #34495e;
             border-radius: 10px;
@@ -745,9 +914,8 @@ class MainWindow(QtWidgets.QMainWindow):
         for plot in self.bandSpecPlots:
             plot.setStyleSheet(chart_style)
         self.hist.setStyleSheet(chart_style)
-        
-        # -------- 布局 --------
-        # 顶部控制区
+        # -------- Layout --------
+        # Top control area
         control_frame = QtWidgets.QFrame()
         control_frame.setStyleSheet("""
             QFrame {
@@ -761,8 +929,7 @@ class MainWindow(QtWidgets.QMainWindow):
         control_layout.addWidget(self.btnStart)
         control_layout.addWidget(self.btnStop)
         control_layout.addStretch()
-        
-        # 温度控制区
+        # Temperature control area
         temp_layout = QtWidgets.QHBoxLayout()
         temp_layout.addWidget(self.temp_label)
         temp_layout.addWidget(self.temp_spinbox)
@@ -770,32 +937,30 @@ class MainWindow(QtWidgets.QMainWindow):
         control_layout.addLayout(temp_layout)
         control_layout.addStretch()
         control_layout.addWidget(self.confidence_label)
-        control_layout.addWidget(self.label)          # 图表网格 - 修改为新的布局：第一行2个，下面3列
+        control_layout.addWidget(self.label)
+        # Chart grid - new layout: 2 on first row, 3 columns below
         g = QtWidgets.QGridLayout()
-        g.setSpacing(8)  # 减少间距以节省空间
-        # 第一行：发射频谱、接收频谱
+        g.setSpacing(8)  # Reduce spacing to save space
+        # First row: transmit spectrum, receive spectrum
         g.addWidget(self.txSpec, 0, 0)
         g.addWidget(self.rxSpec, 0, 1)
-        # 第二行：三个频段的自相关图
+        # Second row: three band cross-correlation plots
         g.addWidget(self.corrPlots[0], 1, 0)
         g.addWidget(self.corrPlots[1], 1, 1)
         g.addWidget(self.corrPlots[2], 1, 2)
-        # 第三行：三个频段的滤波频谱（在对应自相关下方）
+        # Third row: three band filtered spectra (below corresponding cross-corr)
         g.addWidget(self.bandSpecPlots[0], 2, 0)
         g.addWidget(self.bandSpecPlots[1], 2, 1)
         g.addWidget(self.bandSpecPlots[2], 2, 2)
-        
-        # 主布局
+        # Main layout
         vbox = QtWidgets.QVBoxLayout()
         vbox.setSpacing(15)
         vbox.addWidget(control_frame)
         vbox.addLayout(g)
         vbox.addWidget(self.hist)
-        
         central = QtWidgets.QWidget()
         central.setLayout(vbox)
         self.setCentralWidget(central)
-        
         # -------- Signals --------
         self.btnStart.clicked.connect(self.start)
         self.btnStop.clicked.connect(self.stop)
@@ -803,12 +968,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.time_hist = []
         self.confidence_hist = []
         self.start_time = None
-        self.worker = None        # Performance optimization: reduce redraw and add plot caching
+        self.worker = None  # Performance optimization: reduce redraw and add plot caching
         self.last_update_time = 0
         self.min_update_interval = 1.0 / cfg.GUI_UPDATE_RATE  # Update interval based on GUI_UPDATE_RATE
         self.plot_cache = {}  # Plot cache
         self.spectrum_cache_timeout = 0.2  # Spectrum cache timeout (seconds)
-    
     def on_temp_changed(self, value):
         """Update worker's temperature value when temperature changes"""
         if hasattr(self, 'worker') and self.worker and hasattr(self.worker, 'temperature'):
@@ -819,32 +983,26 @@ class MainWindow(QtWidgets.QMainWindow):
     # --- worker signal slots ---    @QtCore.pyqtSlot(float, list, float)
     def _on_dist(self, d, snrs, confidence):
         current_time = time.time()
-        
         # Performance optimization: limit update frequency
         if current_time - self.last_update_time < self.min_update_interval:
             return
-        
         self.last_update_time = current_time
-        
         if self.start_time is None:
             self.start_time = current_time
-        
         elapsed_time = current_time - self.start_time
         # Update display
         self.label.setText(f"Distance: {d:6.2f} m")
         snrs_str = ', '.join(f"{s:.1f}" for s in snrs)
         self.confidence_label.setText(f"Confidence: {confidence:.1f}% | SNR: [{snrs_str}]")
-          # Add to history data
+        # Add to history data
         self.dist_hist.append(d)
         self.time_hist.append(elapsed_time)
         self.confidence_hist.append(confidence)
-        
         # Limit history data length (performance optimization)
         if len(self.dist_hist) > cfg.MAX_HIST_POINTS:
             self.dist_hist = self.dist_hist[-cfg.MAX_HIST_POINTS:]
             self.time_hist = self.time_hist[-cfg.MAX_HIST_POINTS:]
             self.confidence_hist = self.confidence_hist[-cfg.MAX_HIST_POINTS:]
-        
         # Draw distance history curve - improved visuals
         if len(self.time_hist) > 1:
             # Set colors based on confidence
@@ -872,7 +1030,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.hist.ax.spines['left'].set_linewidth(2)
             self.hist.ax.spines['bottom'].set_linewidth(2)
             self.hist.draw()
-    
     @QtCore.pyqtSlot(dict)
     def _on_wave(self, data):
         try:
@@ -910,9 +1067,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.rxSpec.ax.set_xlabel("Frequency (kHz)")
             self.rxSpec.ax.set_ylabel("Magnitude (dB)")
             self.rxSpec.ax.grid(True, alpha=0.3)
-              # ---- Band spectrum and correlation plots (use worker precomputed data) ----
+            # ---- Band spectrum and correlation plots (use worker precomputed data) ----
             for i in range(3):
-                # 绘制band_spectra
+                # Plot band_spectra
                 if (i < len(band_spectra) and band_spectra[i] is not None and hasattr(band_spectra[i], '__len__') and len(band_spectra[i]) > 0 and
                     i < len(band_lengths) and band_lengths[i] is not None):
                     # Use the correct band signal length for frequency axis
@@ -924,8 +1081,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     band = cfg.BANDS[i]
                     self.bandSpecPlots[i].ax.axvspan(band[0]/1000, band[1]/1000, alpha=0.18, color='#ffe0b2')
                     self.bandSpecPlots[i].draw()
-                
-                # 绘制correlations
+                # Plot correlations
                 if i < len(correlations) and correlations[i] is not None and hasattr(correlations[i], '__len__') and len(correlations[i]) > 0:
                     corr = correlations[i]
                     corr_time = np.arange(len(corr)) / cfg.FS * 1000  # ms
@@ -937,12 +1093,10 @@ class MainWindow(QtWidgets.QMainWindow):
         except Exception as e:
             logger.error(f"Error in _on_wave: {e}")
             traceback.print_exc()
-
     def closeEvent(self, e):
         """Handle window close event"""
         self.stop()
         e.accept()
-    
     def start(self):
         if self.worker is not None:
             return
@@ -954,7 +1108,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.worker.start()
         self.btnStart.setEnabled(False)
         self.btnStop.setEnabled(True)
-
     def stop(self):
         if self.worker is not None:
             self.worker.stop()
@@ -962,12 +1115,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.worker = None
         self.btnStart.setEnabled(True)
         self.btnStop.setEnabled(False)
-
     def _on_error(self, msg):
         logger.error(f"Worker error: {msg}")
         QtWidgets.QMessageBox.critical(self, "Error", str(msg))
         self.stop()
-
     def _on_heartbeat(self):
         pass
 
@@ -976,7 +1127,7 @@ def main():
     logger.info("=== Air-Sonar optimized start ===")
     app = QtWidgets.QApplication(sys.argv)
     win = MainWindow()
-    # 检查Qt主屏幕对象，防止NoneType异常
+    # detect primary screen geometry and set initial size, annd avoid none type error
     screen = app.primaryScreen()
     if screen is not None:
         geometry = screen.availableGeometry()
