@@ -519,11 +519,11 @@ class SonarWorker(QtCore.QThread):
             while not self.stop_event.is_set():
                 t0 = time.perf_counter()
                 self.audio.play(self.tx_pcm)
-                rx = self.audio.record()
-                band_spectra = [None]*len(cfg.BANDS)
-                correlations = [None]*len(cfg.BANDS)
-                
-                # 计算每个频段的滤波信号、频谱和相关
+                rx = self.audio.record()                # 初始化输出数组  
+                band_spectra = [None] * len(cfg.BANDS)
+                correlations = [None] * len(cfg.BANDS)
+                band_lengths = [0] * len(cfg.BANDS)  # Store band signal lengths
+                  # 计算每个频段的滤波信号、频谱和相关
                 def process_band_with_output(args):
                     i, chirp, filt = args
                     # 滤波
@@ -534,18 +534,18 @@ class SonarWorker(QtCore.QThread):
                     corr = gpu_correlate(band_sig, chirp)
                     # 距离计算
                     distance, confidence, snr = self._process_band_gpu(rx, chirp, filt, i)
-                    return i, band_spec, corr, (distance, confidence, snr)
-                
-                # 多线程并行三路band处理
+                    return i, band_spec, corr, len(band_sig), (distance, confidence, snr)
+                  # 多线程并行三路band处理
                 with ThreadPoolExecutor(max_workers=len(cfg.BANDS)) as pool:
                     futs = [pool.submit(process_band_with_output, (i, chirp, filt))
                             for i, (chirp, filt) in enumerate(zip(self.chirps, self.filters))]
                     results = []
                     for fut in futs:
                         try:
-                            i, band_spec, corr, result = fut.result(timeout=cfg.LOCK_TIMEOUT)
+                            i, band_spec, corr, band_len, result = fut.result(timeout=cfg.LOCK_TIMEOUT)
                             band_spectra[i] = band_spec
                             correlations[i] = corr
+                            band_lengths[i] = band_len
                             if result[0] is not None:  # distance is not None
                                 results.append(result)
                         except Exception as e:
@@ -561,14 +561,14 @@ class SonarWorker(QtCore.QThread):
                     dist_kf = self.kf.update(weighted_dist)
                     self.distanceSig.emit(dist_kf, list(snrs), avg_confidence)
                     with cfg.CSV_PATH.open("a", newline='') as f:
-                        csv.writer(f).writerow([time.time(), dist_kf, avg_confidence, list(snrs)])
-                
+                        csv.writer(f).writerow([time.time(), dist_kf, avg_confidence, list(snrs)])                
                 self.update_counter += 1
                 if self.update_counter % cfg.PLOT_UPDATE_INTERVAL == 0:
                     self.waveSig.emit({
                         'rx': rx,
                         'band_spectra': band_spectra,
                         'correlations': correlations,
+                        'band_lengths': band_lengths,
                         'rx_id': self.update_counter,
                         'update_spectrum': True
                     })
@@ -867,6 +867,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.hist.ax.spines['left'].set_linewidth(2)
             self.hist.ax.spines['bottom'].set_linewidth(2)
             self.hist.draw()
+    
     @QtCore.pyqtSlot(dict)
     def _on_wave(self, data):
         try:
@@ -874,6 +875,7 @@ class MainWindow(QtWidgets.QMainWindow):
             rx = data['rx']
             band_spectra = data.get('band_spectra', [])
             correlations = data.get('correlations', [])
+            band_lengths = data.get('band_lengths', [])
             update_spectrum = data.get('update_spectrum', True)
             rx_id = data.get('rx_id', None)
             colors = ['#e74c3c', '#f39c12', '#9b59b6']
@@ -903,12 +905,13 @@ class MainWindow(QtWidgets.QMainWindow):
             self.rxSpec.ax.set_xlabel("Frequency (kHz)")
             self.rxSpec.ax.set_ylabel("Magnitude (dB)")
             self.rxSpec.ax.grid(True, alpha=0.3)
-            
-            # ---- Band spectrum and correlation plots (use worker precomputed data) ----
+              # ---- Band spectrum and correlation plots (use worker precomputed data) ----
             for i in range(3):
                 # 绘制band_spectra
-                if i < len(band_spectra) and band_spectra[i] is not None and hasattr(band_spectra[i], '__len__') and len(band_spectra[i]) > 0:
-                    f_band = np.fft.rfftfreq(len(band_spectra[i]), 1/cfg.FS)
+                if (i < len(band_spectra) and band_spectra[i] is not None and hasattr(band_spectra[i], '__len__') and len(band_spectra[i]) > 0 and
+                    i < len(band_lengths) and band_lengths[i] is not None):
+                    # Use the correct band signal length for frequency axis
+                    f_band = np.fft.rfftfreq(band_lengths[i], 1/cfg.FS)
                     self.bandSpecPlots[i].plot_line(f_band/1000, band_spectra[i], color=colors[i], linewidth=2.0, alpha=0.8)
                     self.bandSpecPlots[i].ax.set_xlabel("Frequency (kHz)")
                     self.bandSpecPlots[i].ax.set_ylabel("Magnitude (dB)")

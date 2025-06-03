@@ -4602,3 +4602,27 @@ AttributeError: 'cupy.cuda.device.Device' object has no attribute 'name'
 2025-06-04 00:31:33,265 [ERROR] Error in _on_wave: x and y must have same first dimension, but have shapes (1072,) and (2142,)
 2025-06-04 00:31:33,402 [INFO] SonarWorker stopped
 2025-06-04 00:31:33,500 [ERROR] Error in _on_wave: x and y must have same first dimension, but have shapes (1072,) and (2142,)
+2025-06-04 00:32:54,535 [INFO] === Air-Sonar optimized start ===
+2025-06-04 00:32:58,612 [INFO] SonarWorker started
+2025-06-04 00:32:58,612 [INFO] cupy version=13.4.1, device=NVIDIA GeForce RTX 4060 Laptop GPU
+2025-06-04 00:32:59,381 [ERROR] Error in _on_wave: x and y must have same first dimension, but have shapes (1072,) and (2142,)
+2025-06-04 00:32:59,695 [ERROR] Error in _on_wave: x and y must have same first dimension, but have shapes (1072,) and (2142,)
+2025-06-04 00:32:59,955 [ERROR] Error in _on_wave: x and y must have same first dimension, but have shapes (1072,) and (2142,)
+2025-06-04 00:33:00,181 [ERROR] Error in _on_wave: x and y must have same first dimension, but have shapes (1072,) and (2142,)
+2025-06-04 00:33:00,438 [ERROR] Error in _on_wave: x and y must have same first dimension, but have shapes (1072,) and (2142,)
+2025-06-04 00:33:00,771 [ERROR] Error in _on_wave: x and y must have same first dimension, but have shapes (1072,) and (2142,)
+2025-06-04 00:33:00,991 [ERROR] Error in _on_wave: x and y must have same first dimension, but have shapes (1072,) and (2142,)
+2025-06-04 00:33:01,224 [ERROR] Error in _on_wave: x and y must have same first dimension, but have shapes (1072,) and (2142,)
+2025-06-04 00:33:01,411 [ERROR] Error in _on_wave: x and y must have same first dimension, but have shapes (1072,) and (2142,)
+2025-06-04 00:33:01,591 [ERROR] Error in _on_wave: x and y must have same first dimension, but have shapes (1072,) and (2142,)
+2025-06-04 00:33:01,851 [ERROR] Error in _on_wave: x and y must have same first dimension, but have shapes (1072,) and (2142,)
+2025-06-04 00:33:02,031 [ERROR] Error in _on_wave: x and y must have same first dimension, but have shapes (1072,) and (2142,)
+2025-06-04 00:33:02,221 [ERROR] Error in _on_wave: x and y must have same first dimension, but have shapes (1072,) and (2142,)
+2025-06-04 00:33:02,411 [ERROR] Error in _on_wave: x and y must have same first dimension, but have shapes (1072,) and (2142,)
+2025-06-04 00:33:02,671 [ERROR] Error in _on_wave: x and y must have same first dimension, but have shapes (1072,) and (2142,)
+2025-06-04 00:33:02,974 [ERROR] Error in _on_wave: x and y must have same first dimension, but have shapes (1072,) and (2142,)
+2025-06-04 00:33:03,184 [INFO] SonarWorker stopped
+2025-06-04 00:33:03,273 [ERROR] Error in _on_wave: x and y must have same first dimension, but have shapes (1072,) and (2142,)
+2025-06-04 00:38:18,440 [INFO] === Air-Sonar optimized start ===
+2025-06-04 00:38:21,054 [INFO] SonarWorker started
+2025-06-04 00:38:21,054 [INFO] cupy version=13.4.1, device=NVIDIA GeForce RTX 4060 Laptop GPU
