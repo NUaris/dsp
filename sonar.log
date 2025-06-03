@@ -3553,3 +3553,468 @@ AttributeError: 'MainWindow' object has no attribute 'start'
 2025-06-03 22:43:40,293 [WARNING] Worker thread didn't exit cleanly, forcing...
 2025-06-03 22:43:53,352 [INFO] === Air-Sonar optimized start ===
 2025-06-03 22:44:07,512 [WARNING] Worker thread didn't exit cleanly, forcing...
+2025-06-03 22:45:48,471 [INFO] === Air-Sonar optimized start ===
+2025-06-03 22:45:54,879 [WARNING] Worker thread didn't exit cleanly, forcing...
+2025-06-03 22:50:12,849 [INFO] === Air-Sonar optimized start ===
+2025-06-03 22:50:21,015 [WARNING] Worker thread didn't exit cleanly, forcing...
+2025-06-03 22:53:41,579 [INFO] === Air-Sonar optimized start ===
+2025-06-03 22:53:44,209 [INFO] SonarWorker started
+2025-06-03 22:54:25,159 [INFO] === Air-Sonar optimized start ===
+2025-06-03 22:54:29,910 [INFO] SonarWorker started
+2025-06-03 22:55:04,556 [INFO] SonarWorker stopped
+2025-06-03 22:57:19,971 [INFO] === Air-Sonar optimized start ===
+2025-06-03 22:57:20,514 [ERROR] Fatal error, exit
+Traceback (most recent call last):
+  File "F:\vscode\dsp\airSonar_optimized.py", line 964, in <module>
+    main()
+  File "F:\vscode\dsp\airSonar_optimized.py", line 957, in main
+    win = MainWindow()
+          ^^^^^^^^^^^^
+  File "F:\vscode\dsp\airSonar_optimized.py", line 782, in __init__
+    self.btnStart.clicked.connect(self.start)
+                                  ^^^^^^^^^^
+AttributeError: 'MainWindow' object has no attribute 'start'
+2025-06-03 22:57:59,519 [INFO] === Air-Sonar optimized start ===
+2025-06-03 22:58:02,201 [INFO] SonarWorker started
+2025-06-03 22:58:24,850 [INFO] SonarWorker stopped
+2025-06-03 22:58:42,768 [INFO] === Air-Sonar optimized start ===
+2025-06-03 22:58:49,753 [INFO] === Air-Sonar optimized start ===
+2025-06-03 22:58:52,145 [INFO] SonarWorker started
+2025-06-03 22:59:01,203 [INFO] SonarWorker stopped
+2025-06-03 23:04:29,878 [INFO] === Air-Sonar optimized start ===
+2025-06-03 23:04:34,184 [INFO] SonarWorker started
+2025-06-03 23:26:34,847 [INFO] === Air-Sonar optimized start ===
+2025-06-03 23:26:35,729 [ERROR] Fatal error, exit
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 960, in <module>
+    main()
+  File "f:\vscode\dsp\airSonar_optimized.py", line 945, in main
+    win = MainWindow()
+          ^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 784, in __init__
+    self.btnStart.clicked.connect(self.start)
+                                  ^^^^^^^^^^
+AttributeError: 'MainWindow' object has no attribute 'start'
+2025-06-03 23:29:20,629 [INFO] === Air-Sonar optimized start ===
+2025-06-03 23:29:24,883 [INFO] SonarWorker started
+2025-06-03 23:30:44,069 [INFO] === Air-Sonar optimized start ===
+2025-06-03 23:30:48,582 [INFO] SonarWorker started
+2025-06-03 23:31:00,678 [INFO] === Air-Sonar optimized start ===
+2025-06-03 23:31:02,919 [INFO] SonarWorker started
+2025-06-03 23:31:13,781 [INFO] === Air-Sonar optimized start ===
+2025-06-03 23:31:16,351 [INFO] SonarWorker started
+2025-06-03 23:34:23,077 [INFO] === Air-Sonar optimized start ===
+2025-06-03 23:34:25,226 [INFO] SonarWorker started
+2025-06-03 23:35:40,666 [INFO] SonarWorker stopped
+2025-06-03 23:36:20,611 [INFO] === Air-Sonar optimized start ===
+2025-06-03 23:36:26,497 [INFO] SonarWorker started
+2025-06-03 23:38:06,707 [INFO] === Air-Sonar optimized start ===
+2025-06-03 23:38:10,535 [INFO] SonarWorker started
+2025-06-03 23:39:07,000 [INFO] SonarWorker stopped
+2025-06-03 23:39:22,356 [INFO] === Air-Sonar optimized start ===
+2025-06-03 23:39:25,302 [INFO] SonarWorker started
+2025-06-03 23:39:52,596 [INFO] SonarWorker stopped
+2025-06-03 23:40:04,580 [INFO] === Air-Sonar optimized start ===
+2025-06-03 23:40:08,085 [INFO] SonarWorker started
+2025-06-03 23:40:16,358 [INFO] SonarWorker stopped
+2025-06-03 23:40:38,174 [INFO] === Air-Sonar optimized start ===
+2025-06-03 23:40:41,101 [INFO] SonarWorker started
+2025-06-03 23:44:15,461 [INFO] === Air-Sonar optimized start ===
+2025-06-03 23:44:18,794 [INFO] SonarWorker started
+2025-06-03 23:45:59,659 [INFO] SonarWorker stopped
+2025-06-03 23:51:40,214 [INFO] === Air-Sonar optimized start ===
+2025-06-03 23:51:43,800 [INFO] SonarWorker started
+2025-06-03 23:52:25,103 [ERROR] Audio playback error: [Errno -9999] Unanticipated host error
+2025-06-03 23:52:25,445 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:25,768 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:26,085 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:26,384 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:26,780 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:27,112 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:27,411 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:27,650 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:27,959 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:28,268 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:28,586 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:28,901 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:29,315 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:29,663 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:29,979 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:30,312 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:30,661 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:30,963 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:31,297 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:31,628 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:32,041 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:32,362 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:32,709 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:33,011 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:33,391 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:33,692 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:34,042 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:34,390 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:34,827 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:35,128 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:35,476 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:35,809 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:36,205 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:36,554 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:36,887 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:37,266 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:37,652 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:37,991 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:38,340 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:38,730 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:39,083 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:39,437 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:39,751 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:40,099 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:40,523 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:40,877 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:41,189 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:41,534 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:41,837 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:42,175 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:42,499 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:42,843 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:43,274 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:43,621 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:43,950 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:44,254 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:44,604 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:44,947 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:45,248 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:45,584 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:46,064 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:46,414 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:46,759 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:47,026 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:47,370 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:47,724 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:48,054 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:48,379 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:48,727 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:49,180 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:49,514 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:49,845 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:50,172 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:50,505 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:50,818 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:51,138 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:51,471 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:51,903 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:52,237 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:52,588 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:52,920 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:53,254 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:53,563 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:53,921 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:54,272 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:54,693 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:55,029 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:55,396 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:55,776 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:56,116 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:56,458 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:56,792 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:57,088 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:57,532 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:57,837 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:58,202 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:58,552 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:58,896 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:59,217 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:59,537 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:52:59,885 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:00,331 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:00,654 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:00,959 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:01,283 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:01,625 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:01,985 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:02,396 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:02,758 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:03,177 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:03,529 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:03,882 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:04,295 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:04,599 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:04,928 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:05,266 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:05,605 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:06,012 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:06,371 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:06,699 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:07,043 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:07,390 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:07,748 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:08,137 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:08,512 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:08,925 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:09,304 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:09,595 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:09,954 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:10,269 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:10,635 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:10,956 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:11,288 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:11,730 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:12,069 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:12,502 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:12,882 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:13,279 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:13,649 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:13,986 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:14,363 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:53:14,807 [ERROR] Audio playback error: [Errno -9988] Stream closed
+2025-06-03 23:58:00,324 [INFO] === Air-Sonar optimized start ===
+2025-06-03 23:58:04,006 [INFO] SonarWorker started
+2025-06-03 23:58:04,006 [ERROR] Worker error: 'cupy.cuda.device.Device' object has no attribute 'name'
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 525, in run
+    logger.info(f"cupy version={cp.__version__}, device={cp.cuda.Device().name}")
+                                                         ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'cupy.cuda.device.Device' object has no attribute 'name'
+2025-06-03 23:58:04,008 [ERROR] Worker error: 'cupy.cuda.device.Device' object has no attribute 'name'
+2025-06-03 23:58:04,123 [INFO] SonarWorker stopped
+2025-06-04 00:02:36,502 [INFO] === Air-Sonar optimized start ===
+2025-06-04 00:02:36,981 [ERROR] Fatal error, exit
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 957, in <module>
+    main()
+  File "f:\vscode\dsp\airSonar_optimized.py", line 942, in main
+    win = MainWindow()
+          ^^^^^^^^^^^^
+  File "f:\vscode\dsp\airSonar_optimized.py", line 703, in __init__
+    MplCanvas(f"Band {i+1} Cross-correlation ({BANDS[i][0]}-{BANDS[i][1]}Hz)", width=5, height=3)
+                                              ^^^^^
+NameError: name 'BANDS' is not defined
+2025-06-04 00:03:11,388 [INFO] === Air-Sonar optimized start ===
+2025-06-04 00:03:13,986 [INFO] SonarWorker started
+2025-06-04 00:03:13,986 [ERROR] Worker error: 'cupy.cuda.device.Device' object has no attribute 'name'
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 518, in run
+    logger.info(f"cupy version={cp.__version__}, device={cp.cuda.Device().name}")
+                                                         ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'cupy.cuda.device.Device' object has no attribute 'name'
+2025-06-04 00:03:13,986 [ERROR] Worker error: 'cupy.cuda.device.Device' object has no attribute 'name'
+2025-06-04 00:03:14,101 [INFO] SonarWorker stopped
+2025-06-04 00:09:45,748 [INFO] === Air-Sonar optimized start ===
+2025-06-04 00:09:49,498 [INFO] SonarWorker started
+2025-06-04 00:09:49,498 [ERROR] Worker error: 'cupy.cuda.device.Device' object has no attribute 'name'
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 511, in run
+    logger.info(f"cupy version={cp.__version__}, device={cp.cuda.Device().name}")
+                                                         ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'cupy.cuda.device.Device' object has no attribute 'name'
+2025-06-04 00:09:49,498 [ERROR] Worker error: 'cupy.cuda.device.Device' object has no attribute 'name'
+2025-06-04 00:09:49,613 [INFO] SonarWorker stopped
+2025-06-04 00:09:54,266 [INFO] SonarWorker started
+2025-06-04 00:09:54,266 [ERROR] Worker error: 'cupy.cuda.device.Device' object has no attribute 'name'
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 511, in run
+    logger.info(f"cupy version={cp.__version__}, device={cp.cuda.Device().name}")
+                                                         ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'cupy.cuda.device.Device' object has no attribute 'name'
+2025-06-04 00:09:54,266 [ERROR] Worker error: 'cupy.cuda.device.Device' object has no attribute 'name'
+2025-06-04 00:09:54,383 [INFO] SonarWorker stopped
+2025-06-04 00:10:07,669 [INFO] === Air-Sonar optimized start ===
+2025-06-04 00:10:10,438 [INFO] SonarWorker started
+2025-06-04 00:10:10,438 [ERROR] Worker error: 'cupy.cuda.device.Device' object has no attribute 'name'
+Traceback (most recent call last):
+  File "f:\vscode\dsp\airSonar_optimized.py", line 511, in run
+    logger.info(f"cupy version={cp.__version__}, device={cp.cuda.Device().name}")
+                                                         ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'cupy.cuda.device.Device' object has no attribute 'name'
+2025-06-04 00:10:10,448 [ERROR] Worker error: 'cupy.cuda.device.Device' object has no attribute 'name'
+2025-06-04 00:10:10,562 [INFO] SonarWorker stopped
+2025-06-04 00:11:48,897 [INFO] === Air-Sonar optimized start ===
+2025-06-04 00:11:52,699 [INFO] SonarWorker started
+2025-06-04 00:11:52,699 [INFO] cupy version=13.4.1, device=NVIDIA GeForce RTX 4060 Laptop GPU
+2025-06-04 00:11:53,488 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:11:54,235 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:11:54,468 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:11:54,554 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:11:54,746 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:11:54,949 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:11:55,211 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:11:55,371 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:11:55,471 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:11:55,648 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:11:55,970 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:11:56,221 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:11:56,451 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:11:56,641 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:11:57,640 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:11:57,871 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:11:58,110 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:11:58,220 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:11:58,440 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:11:58,684 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:11:58,896 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:11:59,069 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:11:59,293 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:11:59,414 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:11:59,621 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:11:59,860 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:00,119 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:00,284 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:00,491 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:00,605 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:00,813 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:01,031 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:01,211 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:01,401 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:01,666 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:01,926 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:02,221 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:02,464 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:02,752 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:02,870 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:03,040 [INFO] SonarWorker stopped
+2025-06-04 00:12:03,180 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:06,366 [INFO] === Air-Sonar optimized start ===
+2025-06-04 00:12:09,890 [INFO] SonarWorker started
+2025-06-04 00:12:09,890 [INFO] cupy version=13.4.1, device=NVIDIA GeForce RTX 4060 Laptop GPU
+2025-06-04 00:12:10,634 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:10,913 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:11,129 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:11,343 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:11,513 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:11,814 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:11,968 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:12,200 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:12,361 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:12,547 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:12,798 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:13,036 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:13,194 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:13,399 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:13,627 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:13,853 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:14,033 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:14,241 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:14,433 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:14,653 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:14,944 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:15,173 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:15,404 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:15,563 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:15,773 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:16,003 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:16,173 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:16,359 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:16,696 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:16,813 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:17,023 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:17,273 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:17,454 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:17,650 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:17,812 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:18,065 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:18,253 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:18,513 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:18,783 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:18,983 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:19,267 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:19,447 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:19,655 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:19,883 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:20,123 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:20,363 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:20,545 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:20,808 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:21,104 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:21,346 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:21,463 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:21,683 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:21,900 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:22,083 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:22,273 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:22,447 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:22,793 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:23,104 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:23,379 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:23,624 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:23,745 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:23,973 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:24,163 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:24,519 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:24,773 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:24,903 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:25,405 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:25,633 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:25,917 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:26,157 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:26,298 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:26,613 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:26,888 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:27,113 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:27,375 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:27,505 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:27,813 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:28,080 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:28,343 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:28,618 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:28,763 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:29,093 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:29,336 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:29,598 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:29,818 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:29,956 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:30,263 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:30,583 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:30,881 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:31,133 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:31,273 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:31,643 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:31,972 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:32,305 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:32,733 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:32,870 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:33,139 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:33,355 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:33,608 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:33,993 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:34,138 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:34,392 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:34,729 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:34,983 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:35,298 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:35,618 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:35,873 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:36,153 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:36,403 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:36,633 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:36,843 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:37,113 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:37,513 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:37,823 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:37,994 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:38,415 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:38,723 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:39,098 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:39,399 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:39,686 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:39,988 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:40,278 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:40,793 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:40,953 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:41,408 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:41,713 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:42,109 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:42,285 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:42,784 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:43,127 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:43,623 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:43,789 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:44,238 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:44,558 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:44,820 [INFO] SonarWorker stopped
+2025-06-04 00:12:44,980 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:45,139 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:45,297 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:45,472 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:45,647 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:45,805 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
+2025-06-04 00:12:45,980 [ERROR] Error in _on_wave: object of type 'NoneType' has no len()
