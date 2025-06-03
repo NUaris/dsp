@@ -61,7 +61,7 @@ plt.rcParams['axes.unicode_minus'] = False
 class Config:
     FS: int = 48000
     BASE_TEMP: float = 28.0
-    R_MIN: float = 0.5
+    R_MIN: float = 1.0
     R_MAX: float = 15.0
     CYCLE_MARGIN: float = 0.02
     CHANNELS: int = 1
@@ -559,6 +559,11 @@ class SonarWorker(QtCore.QThread):
                     weighted_dist = np.average(distances, weights=weights)
                     avg_confidence = np.mean(confidences_norm)
                     dist_kf = self.kf.update(weighted_dist)
+
+                    logger.info(f"distance = {dist_kf:.2f} m  "
+                                f"(band SNRs: {['%.1f'%s for s in snrs]}, "
+                                f"confidence: {avg_confidence:.1f}%)")
+
                     self.distanceSig.emit(dist_kf, list(snrs), avg_confidence)
                     with cfg.CSV_PATH.open("a", newline='') as f:
                         csv.writer(f).writerow([time.time(), dist_kf, avg_confidence, list(snrs)])                
