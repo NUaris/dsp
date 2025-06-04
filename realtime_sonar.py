@@ -148,6 +148,23 @@ def normalize_confidences(confidences):
         return (a/total)*100.0
     return np.full_like(a,100.0/len(a))
 
+class ScalarKalman:
+    def __init__(self, q=0.01, r=0.2):
+        self.x = None  # state
+        self.p = 1.0   # covariance
+        self.q = q     # process var
+        self.r = r     # meas var
+
+    def update(self, z):
+        if self.x is None:
+            self.x = z
+            return z
+        self.p += self.q
+        k = self.p / (self.p + self.r)
+        self.x += k*(z - self.x)
+        self.p *= (1 - k)
+        return self.x
+
 def gpu_bandpass(signal, filt):
     b,a,taps = filt
     if GPU_AVAILABLE and cp is not None:
@@ -179,6 +196,16 @@ def gpu_correlate(a,b):
         except Exception:
             return correlate(a,b,'full')
     return correlate(a,b,'full')
+
+def gpu_argmax(signal):
+    """GPU accelerated argmax"""
+    if GPU_AVAILABLE and cp is not None:
+        try:
+            return int(cp.argmax(cp.asarray(signal)))
+        except Exception:
+            return int(np.argmax(signal))
+    else:
+        return int(np.argmax(signal))
 
 def gpu_mean(x):
     try:
